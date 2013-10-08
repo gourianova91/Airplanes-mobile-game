@@ -1,5 +1,4 @@
-//проверка
-// переменные
+//переменные
 var canvas, ctx;
 var backgroundImage;
 var iBgShiftX = 100;
@@ -10,7 +9,8 @@ var cloud = []; //облака
 
 var iCloudW = 32; // ширина облака
 var iCloudH = 194; // высота облака
-var iCloudSpeed = 2; // скорость облака
+var iCloudSpeedMin = 2; // минимальная скорость облака
+var iCloudSpeedMax =5; //максимальная скорость облака
 
 // объекты:
 function Cloud(x, y, w, h, speed, image) {
@@ -84,7 +84,7 @@ $(function(){
         clearInterval(enTimer);
 
         var randY = getRand(0, canvas.height - iCloudH);
-        cloud.push(new Cloud(canvas.width, randY, iCloudW, iCloudH, /*- iCloudSpeed*/ - getRand(1, 5), oCloudImage));
+        cloud.push(new Cloud(canvas.width, randY, iCloudW, iCloudH, - getRand(iCloudSpeedMin, iCloudSpeedMax), oCloudImage)); //скорость теперь настравивается перменными
       //  cloud.push(new Cloud(canvas.width, randY, iCloudW, iCloudH, - iCloudSpeed, oCloudImage));
 
         var interval = getRand(5000, 10000);
