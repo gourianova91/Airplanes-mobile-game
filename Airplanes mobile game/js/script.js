@@ -1,3 +1,4 @@
+//проверка
 // переменные
 var canvas, ctx;
 var backgroundImage;
@@ -27,7 +28,7 @@ function getRand(x, y) {
     return Math.floor(Math.random()*y)+x;
 }
 
-// функции рисования :
+// функции рисования:
 function drawScene() { // основная функция отрисовки сцены
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); //очистить холст
 
