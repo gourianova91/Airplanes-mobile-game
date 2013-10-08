@@ -1,3 +1,5 @@
+//проверка возможности коммитов
+
 // переменные
 var canvas, ctx;
 var backgroundImage;
