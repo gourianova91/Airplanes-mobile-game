@@ -25,6 +25,7 @@ function Button(x, y, w, h, state, image) {
     this.state = state;
     this.imageShift = 0;
     this.image = image;
+	this.visible= true;
 }
 
 function Cloud(x, y, w, h, speed, image) {
@@ -85,6 +86,20 @@ function drawDialog() { // функция отрисовки диалога
         }
     }
 }
+
+function drawButton() { // функция отрисовки диалога
+	if(button.visible==true)
+	{
+		// отрисовка кнопки
+		ctx.drawImage(button.image, 0, button.imageShift, button.w, button.h, button.x, button.y, button.w, button.h);
+
+		// отрисовка текста на кнопке
+		ctx.font = '32px Calibri';
+		ctx.fillStyle = '#ffffff';
+		ctx.fillText('Играть', 500, 354);
+	}
+}
+
 // функции рисования:
 function drawScene() { // основная функция отрисовки сцены
     clear(); // очистить canvas
@@ -114,14 +129,8 @@ function drawScene() { // основная функция отрисовки с�
     
     // отрисовка диалога
     drawDialog();
-
-    // отрисовка кнопки
-    ctx.drawImage(button.image, 0, button.imageShift, button.w, button.h, button.x, button.y, button.w, button.h);
-
-    // отрисовка текста на кнопке
-    ctx.font = '32px Calibri';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText('Играть', 500, 354);
+	drawButton();
+    
 }
 
 // -------------------------------------------------------------
@@ -193,10 +202,12 @@ $(function(){
             if (iDialogPage === 0) {
                 iDialogPage++;
                 bDrawDialog = !bDrawDialog;
+				button.visible=false;
             } else {
                 iDialogPage = 0;
                 bDrawDialog = !bDrawDialog;
                 iDialogPage++;
+				button.visible=false;
             }
         }
         button.state = 'normal';
