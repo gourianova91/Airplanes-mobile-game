@@ -222,9 +222,12 @@ $(function(){
         clearInterval(enTimer);
 
         var randY = getRand(0, canvas.height - iCloudH);
-        cloud.push(new Cloud(canvas.width, randY, iCloudW, iCloudH, - getRand(iCloudSpeedMin, iCloudSpeedMax), oCloudImage)); //скорость теперь настравивается перменными
+        var chanse = getRand(0,100);
+        if(chanse <= 40)
+        {
+            cloud.push(new Cloud(canvas.width, randY, iCloudW, iCloudH, - getRand(iCloudSpeedMin, iCloudSpeedMax), oCloudImage)); //скорость теперь настравивается перменными
       //  cloud.push(new Cloud(canvas.width, randY, iCloudW, iCloudH, - iCloudSpeed, oCloudImage));
-
+        }
         var interval = getRand(5000, 10000);
         enTimer = setInterval(addCloud, interval); // повторение кадров
     }
