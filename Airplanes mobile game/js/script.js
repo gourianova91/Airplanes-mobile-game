@@ -223,7 +223,7 @@ $(function(){
 
         var randY = getRand(0, canvas.height - iCloudH);
         var chanse = getRand(0,100);
-        if(chanse <= 40)
+        if(chanse <= 70)
         {
             cloud.push(new Cloud(canvas.width, randY, iCloudW, iCloudH, - getRand(iCloudSpeedMin, iCloudSpeedMax), oCloudImage)); //скорость теперь настравивается перменными
       //  cloud.push(new Cloud(canvas.width, randY, iCloudW, iCloudH, - iCloudSpeed, oCloudImage));
