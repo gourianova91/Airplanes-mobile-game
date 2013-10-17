@@ -21,7 +21,7 @@ var introImage;
 var oEnemyImage;
 
 var iBgShiftY = 9300; //10000 (level length) - 700 (canvas height)
-var bPause = true; // game pause
+var bPause = false; // game pause
 var plane = null; // plane object
 var rockets = []; // array of rockets
 var enemies = []; // array of enemies
@@ -83,7 +83,11 @@ function getRand(x, y) {
 // Display Intro function
 function displayIntro() {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.drawImage(introImage, 0, 0,700, 700);
+    //ctx.drawImage(introImage, 0, 0,700, 700);
+    setInterval(drawScene, 20); // loop drawScene
+
+            // and add first enemy
+            addEnemy();
 }
 
 // Draw Main scene function
@@ -307,9 +311,9 @@ $(function(){
         if (pk) {
             delete pressedKeys[evt.keyCode]; // remove pressed key from array
         }
-        if (evt.keyCode == 65) { // 'A' button - add a rocket
-            rockets.push(new Rocket(plane.x - 16, plane.y - plane.h, 32, 32, iRocketSpeed, oRocketImage));
-        }
+        //if (evt.keyCode == 65) { // 'A' button - add a rocket
+            //rockets.push(new Rocket(plane.x - 16, plane.y - plane.h, 32, 32, iRocketSpeed, oRocketImage));
+       // }
         if (evt.keyCode == 37 || evt.keyCode == 39) {
             // revert plane sprite to default position
             if (iSprPos > 1) {
