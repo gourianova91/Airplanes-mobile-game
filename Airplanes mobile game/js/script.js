@@ -4,6 +4,7 @@ var backgroundImage;
 var backgroundImage1;
 var iBgShiftX = 100;
 var button;
+var button1;
 var bDrawDialog = true;
 var iDialogPage = 1;
 // -------------------------------------------------------------
@@ -87,7 +88,7 @@ function drawDialog() { // функция отрисовки диалога
     }
 }
 
-function drawButton() { // функция отрисовки диалога
+function drawButton() { // функция отрисовки кнопки
 	if(button.visible==true)
 	{
 		// отрисовка кнопки
@@ -97,6 +98,16 @@ function drawButton() { // функция отрисовки диалога
 		ctx.font = '32px Calibri';
 		ctx.fillStyle = '#ffffff';
 		ctx.fillText('Играть', 500, 354);
+	}
+        if(button1.visible==true)
+	{
+		// отрисовка кнопки
+		ctx.drawImage(button1.image, 0, button1.imageShift, button1.w, button1.h, button1.x, button1.y, button1.w, button1.h);
+
+		// отрисовка текста на кнопке
+		ctx.font = '25px Calibri';
+		ctx.fillStyle = '#ffffff';
+		ctx.fillText('Меню', 63, 545);
 	}
 }
 
@@ -160,6 +171,7 @@ $(function(){
     buttonImage.onload = function() {
     }
     button = new Button(380, 350, 250, 50, 'normal', buttonImage);
+    button1 = new Button(0, 535, 100, 50, 'normal', buttonImage);
 
     $('#scene').mousedown(function(e) { // привязываем событие нажатия мыши (для перетаскивания)
 
@@ -170,12 +182,19 @@ $(function(){
                //
         }
 
-        // поведение кнопки
+        // поведение кнопок
         if(button.visible)
         {        
             if (mouseX > button.x && mouseX < button.x+button.w && mouseY > button.y && mouseY < button.y+button.h) {
                 button.state = 'pressed';
                 button.imageShift = 175;
+            }
+        }
+        if(button1.visible)
+        {        
+            if (mouseX > button1.x && mouseX < button1.x+button1.w && mouseY > button1.y && mouseY < button1.y+button1.h) {
+                button1.state = 'pressed';
+                button1.imageShift = 175;
             }
         }
     });
@@ -187,7 +206,7 @@ $(function(){
         if (!bDrawDialog && cloud.bDrag) {
         }
 
-        // поведение кнопки
+        // поведение кнопок
         if(button.visible)
         {
             if (button.state != 'pressed') {
@@ -199,11 +218,22 @@ $(function(){
                 }
             }
         }
+        if(button1.visible)
+        {
+            if (button1.state != 'pressed') {
+                button1.state = 'normal';
+                button1.imageShift = 9;
+                if (mouseX > button1.x && mouseX < button1.x+button1.w && mouseY > button1.y && mouseY < button1.y+button1.h) {
+                    button1.state = 'hover';
+                    button1.imageShift = 92;
+                }
+            }
+        }
     });
 
     $('#scene').mouseup(function(e) { // привязываем событие отжатия кнопки
 
-        // поведение кнопки
+        // поведение кнопок
         if(button.visible)
         {
             if (button.state === 'pressed') {
@@ -221,6 +251,25 @@ $(function(){
         }
         button.state = 'normal';
         button.imageShift = 9;
+        if(button1.visible)
+        {
+            if (button1.state === 'pressed') {
+                if (iDialogPage === 0) {
+                    iDialogPage++;
+                    bDrawDialog = !bDrawDialog;
+                                   // button1.visible=false;
+                                    button.visible=false;
+                } else {
+                    iDialogPage = 0;
+                    bDrawDialog = !bDrawDialog;
+                    iDialogPage++;
+                                   // button1.visible=false;
+                                    button.visible=false;
+                }
+            }
+        }
+        button1.state = 'normal';
+        button1.imageShift = 9;
     });
     
     setInterval(drawScene, 30); // повторение кадров
