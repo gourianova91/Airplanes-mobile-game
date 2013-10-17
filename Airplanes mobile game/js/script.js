@@ -171,9 +171,12 @@ $(function(){
         }
 
         // поведение кнопки
-        if (mouseX > button.x && mouseX < button.x+button.w && mouseY > button.y && mouseY < button.y+button.h) {
-            button.state = 'pressed';
-            button.imageShift = 175;
+        if(button.visible)
+        {        
+            if (mouseX > button.x && mouseX < button.x+button.w && mouseY > button.y && mouseY < button.y+button.h) {
+                button.state = 'pressed';
+                button.imageShift = 175;
+            }
         }
     });
 
@@ -185,12 +188,15 @@ $(function(){
         }
 
         // поведение кнопки
-        if (button.state != 'pressed') {
-            button.state = 'normal';
-            button.imageShift = 9;
-            if (mouseX > button.x && mouseX < button.x+button.w && mouseY > button.y && mouseY < button.y+button.h) {
-                button.state = 'hover';
-                button.imageShift = 92;
+        if(button.visible)
+        {
+            if (button.state != 'pressed') {
+                button.state = 'normal';
+                button.imageShift = 9;
+                if (mouseX > button.x && mouseX < button.x+button.w && mouseY > button.y && mouseY < button.y+button.h) {
+                    button.state = 'hover';
+                    button.imageShift = 92;
+                }
             }
         }
     });
@@ -198,16 +204,19 @@ $(function(){
     $('#scene').mouseup(function(e) { // привязываем событие отжатия кнопки
 
         // поведение кнопки
-        if (button.state === 'pressed') {
-            if (iDialogPage === 0) {
-                iDialogPage++;
-                bDrawDialog = !bDrawDialog;
-				button.visible=false;
-            } else {
-                iDialogPage = 0;
-                bDrawDialog = !bDrawDialog;
-                iDialogPage++;
-				button.visible=false;
+        if(button.visible)
+        {
+            if (button.state === 'pressed') {
+                if (iDialogPage === 0) {
+                    iDialogPage++;
+                    bDrawDialog = !bDrawDialog;
+                                    button.visible=false;
+                } else {
+                    iDialogPage = 0;
+                    bDrawDialog = !bDrawDialog;
+                    iDialogPage++;
+                                    button.visible=false;
+                }
             }
         }
         button.state = 'normal';
