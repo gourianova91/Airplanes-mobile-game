@@ -15,7 +15,7 @@ var cloud = []; //облака
 var iCloudW = 32; // ширина облака
 var iCloudH = 194; // высота облака
 var iCloudSpeedMin = 2; // минимальная скорость облака
-var iCloudSpeedMax =5; //максимальная скорость облака
+var iCloudSpeedMax = 5; //максимальная скорость облака
 
 // объекты:
 function Button(x, y, w, h, state, image) {
@@ -107,7 +107,7 @@ function drawButton() { // функция отрисовки кнопки
 		// отрисовка текста на кнопке
 		ctx.font = '25px Calibri';
 		ctx.fillStyle = '#ffffff';
-		ctx.fillText('Меню', 63, 545);
+		ctx.fillText('Меню', 127, 545);
 	}
 }
 
@@ -167,11 +167,11 @@ $(function(){
     
     // загрузка кнопки
     var buttonImage = new Image();
-    buttonImage.src = 'images/menu.png';
+    buttonImage.src = 'images/menu1.png';
     buttonImage.onload = function() {
     }
     button = new Button(380, 350, 250, 50, 'normal', buttonImage);
-    button1 = new Button(0, 535, 100, 50, 'normal', buttonImage);
+    button1 = new Button(0, 535, 200, 52, 'normal', buttonImage);
 
     $('#scene').mousedown(function(e) { // привязываем событие нажатия мыши (для перетаскивания)
 
@@ -187,14 +187,14 @@ $(function(){
         {        
             if (mouseX > button.x && mouseX < button.x+button.w && mouseY > button.y && mouseY < button.y+button.h) {
                 button.state = 'pressed';
-                button.imageShift = 175;
+                button.imageShift = 174;
             }
         }
         if(button1.visible)
         {        
             if (mouseX > button1.x && mouseX < button1.x+button1.w && mouseY > button1.y && mouseY < button1.y+button1.h) {
                 button1.state = 'pressed';
-                button1.imageShift = 175;
+                button1.imageShift = 398;
             }
         }
     });
@@ -211,10 +211,10 @@ $(function(){
         {
             if (button.state != 'pressed') {
                 button.state = 'normal';
-                button.imageShift = 9;
+                button.imageShift = 8;
                 if (mouseX > button.x && mouseX < button.x+button.w && mouseY > button.y && mouseY < button.y+button.h) {
                     button.state = 'hover';
-                    button.imageShift = 92;
+                    button.imageShift = 91;
                 }
             }
         }
@@ -222,10 +222,10 @@ $(function(){
         {
             if (button1.state != 'pressed') {
                 button1.state = 'normal';
-                button1.imageShift = 9;
+                button1.imageShift = 249;
                 if (mouseX > button1.x && mouseX < button1.x+button1.w && mouseY > button1.y && mouseY < button1.y+button1.h) {
                     button1.state = 'hover';
-                    button1.imageShift = 92;
+                    button1.imageShift = 323;
                 }
             }
         }
@@ -250,7 +250,7 @@ $(function(){
             }
         }
         button.state = 'normal';
-        button.imageShift = 9;
+        button.imageShift = 8;
         if(button1.visible)
         {
             if (button1.state === 'pressed') {
@@ -269,7 +269,7 @@ $(function(){
             }
         }
         button1.state = 'normal';
-        button1.imageShift = 9;
+        button1.imageShift = 249;
     });
     
     setInterval(drawScene, 30); // повторение кадров
