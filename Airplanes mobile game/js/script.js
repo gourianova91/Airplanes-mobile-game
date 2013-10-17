@@ -268,7 +268,6 @@ $(function(){
                 }
             }
         }
-        
         button1.state = 'normal';
         button1.imageShift = 249;
     });
