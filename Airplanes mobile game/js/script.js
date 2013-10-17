@@ -9,10 +9,13 @@ var iDialogPage = 1;
 // -------------------------------------------------------------
 // игровые объекты
 var cloud = null; 
+var plane=null;
 var cloud = []; //облака
 
 var iCloudW = 32; // ширина облака
 var iCloudH = 194; // высота облака
+var planeW = 211; // plane width
+var planeH = 40; // plane height
 var iCloudSpeedMin = 2; // минимальная скорость облака
 var iCloudSpeedMax =5; //максимальная скорость облака
 
@@ -35,6 +38,17 @@ function Cloud(x, y, w, h, speed, image) {
     this.h = h;
     this.speed = speed;
     this.image = image;
+}
+
+function Plane(x, y, w, h, image) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.image = image;
+    //this.bDrag = false;
+    this.fuel = 666;
+    this.fuelMax=1000;
 }
 
 // -------------------------------------------------------------
@@ -112,25 +126,31 @@ function drawScene() { // основная функция отрисовки с�
     }
     ctx.drawImage(backgroundImage1, 0 + iBgShiftX, 0, 1000, 940, 0, 0, 1000, 600);
 
-    // рисуем облака
-    if (cloud.length > 0) {
-        for (var ekey in cloud) {
-            if (cloud[ekey] !== undefined) {
-                ctx.drawImage(cloud[ekey].image, cloud[ekey].x, cloud[ekey].y);
-                cloud[ekey].x += cloud[ekey].speed;
+    
+    
+    // отрисовка диалога
+    drawDialog();
+    drawButton();
+    if(!bDrawDialog)
+    {
+        // рисуем самолет
+        ctx.drawImage(plane.image, plane.x,plane.y);
+        
+        // рисуем облака
+        if (cloud.length > 0) {
+            for (var ekey in cloud) {
+                if (cloud[ekey] !== undefined) {
+                    ctx.drawImage(cloud[ekey].image, cloud[ekey].x, cloud[ekey].y);
+                    cloud[ekey].x += cloud[ekey].speed;
 
-                  if (cloud[ekey].x < cloud[ekey].x - iCloudW) {
-               // if (cloud[ekey].x < - iCloudW) {
-                    delete cloud[ekey];
+                      if (cloud[ekey].x < cloud[ekey].x - iCloudW) {
+                   // if (cloud[ekey].x < - iCloudW) {
+                        delete cloud[ekey];
+                    }
                 }
             }
         }
     }
-    
-    // отрисовка диалога
-    drawDialog();
-	drawButton();
-    
 }
 
 // -------------------------------------------------------------
@@ -153,6 +173,13 @@ $(function(){
     var oCloudImage = new Image();
     oCloudImage.src = 'images/cloud1.gif';
     oCloudImage.onload = function() { }
+    
+    // инициализация самолета
+    var oPlaneImage = new Image();
+    oPlaneImage.src = 'images/plane.gif';
+    oPlaneImage.onload = function() {
+        plane = new Plane(5+planeW, canvas.height/2, planeW, planeH, oPlaneImage);
+    }
     
     // загрузка кнопки
     var buttonImage = new Image();
@@ -185,6 +212,7 @@ $(function(){
         var mouseY = e.layerY || 0;
 
         if (!bDrawDialog && cloud.bDrag) {
+            
         }
 
         // поведение кнопки
@@ -232,7 +260,7 @@ $(function(){
 
         var randY = getRand(0, canvas.height - iCloudH);
         var chanse = getRand(0,100);
-        if(chanse <= 70)
+        if(chanse <= 70&&!bDrawDialog)
         {
             cloud.push(new Cloud(canvas.width, randY, iCloudW, iCloudH, - getRand(iCloudSpeedMin, iCloudSpeedMax), oCloudImage)); //скорость теперь настравивается перменными
       //  cloud.push(new Cloud(canvas.width, randY, iCloudW, iCloudH, - iCloudSpeed, oCloudImage));
