@@ -27,6 +27,8 @@ var iCloudW = 131; // cloud width
 var iCloudH = 68; // cloud height
 var iRocketSpeed = 10; // initial rocket speed
 var iCloudSpeed = 3; // initial cloud speed
+var iCloudSpeedMin = 3; // минимальная скорость облака
+var iCloudSpeedMax = 4; //максимальная скорость облака
 var pressedKeys = []; // array of pressed keys
 var iScore = 0; // total score
 var iLife = 100; // total life of plane
@@ -125,7 +127,21 @@ function displayIntro() {
             // and add first cloud
             addCloud();
 }
+    // Add Cloud function (adds a new cloud randomly)
+    function addCloud() {
+    clearInterval(enTimer);
 
+    var randX = getRand(0, canvas.height - iCloudH);
+    var chanse = getRand(0,100);
+    if(chanse <= 70&&!bDrawDialog)
+        {
+          clouds.push(new Cloud(randX, 0, iCloudW, iCloudH, - getRand(iCloudSpeedMin, iCloudSpeedMax), oCloudImage)); //скорость теперь настраивается перменными
+        }
+    var interval = getRand(900, 1000);
+   // var interval = getRand(5000, 10000);
+    enTimer = setInterval(addCloud, interval); // повторение кадров
+    }
+    
 // фукнции отрисовки :
 
 function clear() { // функция очистки canvas
@@ -166,6 +182,10 @@ function drawDialog() { // функция отрисовки диалога
             ctx.font = '24px Calibri';
             ctx.fillText('После закрытия диалогового окна Вы сможете', ctx.canvas.width/2, 190);
             ctx.fillText('передвигать самолет с помощью мыши', ctx.canvas.width/2, 220);
+        } else if (iDialogPage === 2) {
+            ctx.fillText('Выбор самолета', ctx.canvas.width/2, 100);
+           // ctx.font = '24px Calibri';
+           // ctx.fillText('Выбор самолета', ctx.canvas.width/2, 220);
         }
     }
 }
@@ -177,21 +197,22 @@ function drawButton() { // функция отрисовки кнопки
 		ctx.drawImage(button.image, 0, button.imageShift, button.w, button.h, button.x, button.y, button.w, button.h);
 
 		// отрисовка текста на кнопке
-		ctx.font = '25px Calibri';
+		ctx.font = '20px Sans Serif';
 		ctx.fillStyle = '#FFF6EC';
-		ctx.fillText('Играть', ctx.canvas.width/2, ctx.canvas.height/2 - 50);
+		ctx.fillText('Играть', ctx.canvas.width/2, ctx.canvas.height/2 - 45);
 	}
-       /* if(button1.visible==true)
+        if(button1.visible==true)
 	{
 		// отрисовка кнопки
 		ctx.drawImage(button1.image, 0, button1.imageShift, button1.w, button1.h, button1.x, button1.y, button1.w, button1.h);
 
 		// отрисовка текста на кнопке
-		ctx.font = '25px Calibri';
-		ctx.fillStyle = '#ffffff';
-		ctx.fillText('Меню', 127, 545);
-	}*/
+		ctx.font = '20px Sans Serif';
+		ctx.fillStyle = '#FFF6EC';
+		ctx.fillText('Выбор самолета', ctx.canvas.width/2 - 2, ctx.canvas.height/2 + 5);
+	}
 }
+
 
 // функции рисования:
 function drawScene() { // основная функция отрисовки сцены
@@ -237,7 +258,7 @@ function drawScene() { // основная функция отрисовки с�
             // draw score
             ctx.font = '40px Verdana';
             ctx.fillStyle = '#FFF6EC';
-            ctx.fillText('Finish, your score: ' + iScore * 10 + ' points', ctx.canvas.width/2, ctx.canvas.height/2);
+            ctx.fillText('Finish, your score: ' + iScore * 10 + ' points', ctx.canvas.width/2, ctx.canvas.height/2 - 100);
             return;
         }
 
@@ -375,17 +396,6 @@ function processPressedKeys() {
     }
 }
 
-// Add Cloud function (adds a new cloud randomly)
-function addCloud() {
-    clearInterval(enTimer);
-
-    var randX = getRand(0, canvas.height - iCloudH);
-    clouds.push(new Cloud(randX, 0, iCloudW, iCloudH, - iCloudSpeed, oCloudImage));
-
-    var interval = getRand(900, 1000);
-    enTimer = setInterval(addCloud, interval); // loop
-}
-
 // инициализация
 $(function(){
     canvas = document.getElementById('scene');
@@ -438,7 +448,7 @@ $(function(){
     buttonImage.onload = function() {
     }
     button = new Button(ctx.canvas.height/2 - 75, ctx.canvas.width/2 - 50, 151, 38, 'normal', buttonImage);
-   // button1 = new Button(0, 535, 200, 52, 'normal', buttonImage);
+    button1 = new Button(ctx.canvas.height/2 - 75, ctx.canvas.width/2, 151, 38, 'normal', buttonImage);
     
    /* // инициализация пустого облака
     var oCloudImage = new Image();
@@ -510,13 +520,13 @@ $(function(){
                 button.imageShift = 82;
             }
         }
-       /* if(button1.visible)
+        if(button1.visible)
         {        
             if (mouseX > button1.x && mouseX < button1.x+button1.w && mouseY > button1.y && mouseY < button1.y+button1.h) {
                 button1.state = 'pressed';
-                button1.imageShift = 398;
+                button1.imageShift = 82;
             }
-        }*/
+        }
     });
 
     $('#scene').mousemove(function(e) { // привязываем событие движения мыши
@@ -539,17 +549,17 @@ $(function(){
                 }
             }
         }
-        /*if(button1.visible)
+        if(button1.visible)
         {
             if (button1.state != 'pressed') {
                 button1.state = 'normal';
-                button1.imageShift = 249;
+                button1.imageShift = 0;
                 if (mouseX > button1.x && mouseX < button1.x+button1.w && mouseY > button1.y && mouseY < button1.y+button1.h) {
                     button1.state = 'hover';
-                    button1.imageShift = 323;
+                    button1.imageShift = 40;
                 }
             }
-        }*/
+        }
     });
 
     $('#scene').mouseup(function(e) { // привязываем событие отжатия кнопки
@@ -558,39 +568,27 @@ $(function(){
         if(button.visible)
         {
             if (button.state === 'pressed') {
-                if (iDialogPage === 0) {
-                    iDialogPage++;
-                    bDrawDialog = !bDrawDialog;
-                                    button.visible=false;
-                } else {
-                    iDialogPage = 0;
-                    bDrawDialog = !bDrawDialog;
-                    iDialogPage++;
-                                    button.visible=false;
-                }
+                iDialogPage = 0;
+                bDrawDialog = !bDrawDialog;
+                button.visible=false;
+                button1.visible=false;
             }
+                
         }
         button.state = 'normal';
         button.imageShift = 0;
-       /* if(button1.visible)
+        if(button1.visible)
         {
             if (button1.state === 'pressed') {
-                if (iDialogPage === 0) {
-                    iDialogPage++;
-                    bDrawDialog = !bDrawDialog;
-                                   // button1.visible=false;
-                                    button.visible=false;
-                } else {
-                    iDialogPage = 0;
-                    bDrawDialog = !bDrawDialog;
-                    iDialogPage++;
-                                   // button1.visible=false;
-                                    button.visible=false;
-                }
+                iDialogPage = 2;
+            //    bDrawDialog = !bDrawDialog;
+                button.visible=false;
+                button1.visible=false;
             }
+
         }
         button1.state = 'normal';
-        button1.imageShift = 249;*/
+        button1.imageShift = 0;
     });
     
    // setInterval(drawScene, 30); // повторение кадров
@@ -611,8 +609,5 @@ $(function(){
         enTimer = setInterval(addCloud, interval); // повторение кадров
     }*/
     //addCloud();
-        // when intro is ready - display it
-  //  introImage.onload = function() {
         displayIntro(); // Display intro once
-   // }
     });
