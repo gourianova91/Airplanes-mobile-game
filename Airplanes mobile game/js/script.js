@@ -34,6 +34,8 @@ var iScore = 0; // total score
 var iLife = 100; // total life of plane
 var iDamage = 10; // damage per cloud plane
 var enTimer = null; // random timer for a new cloud
+var bplane = false; //выбор самолета
+var iplane = 1; //по умолчанию - 1 самолет
 // -------------------------------------------------------------
 // -------------------------------------------------------------
 // игровые объекты
@@ -150,9 +152,9 @@ function clear() { // функция очистки canvas
 
 function drawDialog() { // функция отрисовки диалога
     if (bDrawDialog) {
-        var bg_gradient = ctx.createLinearGradient(0, 200, 0, 400);
-        bg_gradient.addColorStop(0.0, 'rgba(246, 211, 175, 0.8)');
-        bg_gradient.addColorStop(1.0, 'rgba(209, 188, 167, 0.8)');
+        var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
+        bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.8)');
+        bg_gradient.addColorStop(1.0, 'rgba(224, 224, 224, 0.8)');
 
         ctx.beginPath(); // начало фигуры
         ctx.fillStyle = bg_gradient;
@@ -165,27 +167,34 @@ function drawDialog() { // функция отрисовки диалога
 		ctx.fill(); // заполнение фигуры
 
         ctx.lineWidth = 2;
-        ctx.strokeStyle = 'rgba(245, 224, 204, 0.5)';
+        ctx.strokeStyle = 'rgba(224, 224, 224, 0.4)';
         ctx.stroke(); // отрисовка границы
 
         // отрисовка текста
-        ctx.font = '42px Calibri';
+        ctx.font = '42px Condensed';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
         ctx.shadowColor = '#000';
         ctx.shadowOffsetX = 2;
         ctx.shadowOffsetY = 2;
         ctx.shadowBlur = 2;
-        ctx.fillStyle = '#FFF6EC';
+        ctx.fillStyle = '#F4F3FC';
         if (iDialogPage === 1) {
-            ctx.fillText('Airplanes mobile game', ctx.canvas.width/2, 100);
-            ctx.font = '24px Calibri';
-            ctx.fillText('После закрытия диалогового окна Вы сможете', ctx.canvas.width/2, 190);
-            ctx.fillText('передвигать самолет с помощью мыши', ctx.canvas.width/2, 220);
+            ctx.fillText('Airplanes mobile game', ctx.canvas.width/2, ctx.canvas.height/2 - 230);
+           // ctx.font = '24px Calibri';
+           // ctx.fillText('После закрытия диалогового окна Вы сможете', ctx.canvas.width/2, 190);
+           // ctx.fillText('управлять самолетом', ctx.canvas.width/2, 220);
             button2.visible=false;
+            button3.visible=false;
+            button4.visible=false;
         } else if (iDialogPage === 2) {
-            ctx.fillText('Выбор самолета', ctx.canvas.width/2, 100);
-            button2.visible=true;
+            ctx.fillText('Выбор самолета', ctx.canvas.width/2, ctx.canvas.height/2 - 300);
+            button2.visible=true; 
+            button3.visible=true;
+            button4.visible=true;
+            ctx.strokeRect(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 200, 200, 200);
+             // draw plane
+            ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2 - 5, plane.y - plane.h/2 - 360, plane.w, plane.h);
            // ctx.font = '24px Calibri';
            // ctx.fillText('Выбор самолета', ctx.canvas.width/2, 220);
         }
@@ -199,9 +208,9 @@ function drawButton() { // функция отрисовки кнопки
 		ctx.drawImage(button.image, 0, button.imageShift, button.w, button.h, button.x, button.y, button.w, button.h);
 
 		// отрисовка текста на кнопке
-		ctx.font = '20px Sans Serif';
-		ctx.fillStyle = '#FFF6EC';
-		ctx.fillText('Играть', ctx.canvas.width/2, ctx.canvas.height/2 - 45);
+		ctx.font = '20px Condensed';
+		ctx.fillStyle = '#F4F3FC';
+		ctx.fillText('Играть', ctx.canvas.width/2 - 3, ctx.canvas.height/2 - 87);
 	}
         if(button1.visible==true)
 	{
@@ -209,9 +218,9 @@ function drawButton() { // функция отрисовки кнопки
 		ctx.drawImage(button1.image, 0, button1.imageShift, button1.w, button1.h, button1.x, button1.y, button1.w, button1.h);
 
 		// отрисовка текста на кнопке
-		ctx.font = '20px Sans Serif';
-		ctx.fillStyle = '#FFF6EC';
-		ctx.fillText('Выбор самолета', ctx.canvas.width/2 - 2, ctx.canvas.height/2 + 5);
+		ctx.font = '20px Condensed';
+		ctx.fillStyle = '#F4F3FC';
+		ctx.fillText('Выбор самолета', ctx.canvas.width/2 - 2, ctx.canvas.height/2 - 23);
 	}
         if(button2.visible==true)
 	{
@@ -219,9 +228,29 @@ function drawButton() { // функция отрисовки кнопки
 		ctx.drawImage(button2.image, 0, button2.imageShift, button2.w, button2.h, button2.x, button2.y, button2.w, button2.h);
 
 		// отрисовка текста на кнопке
-		ctx.font = '20px Sans Serif';
-		ctx.fillStyle = '#FFF6EC';
-		ctx.fillText('Меню', 85, ctx.canvas.height - 45);
+		ctx.font = '20px Condensed';
+		ctx.fillStyle = '#F4F3FC';
+		ctx.fillText('Назад в Меню', ctx.canvas.width/2 - 200, ctx.canvas.height/2 + 263);
+	}
+        if(button3.visible==true)
+	{
+		// отрисовка кнопки
+		ctx.drawImage(button3.image, 0, button3.imageShift, button3.w, button3.h, button3.x, button3.y, button3.w, button3.h);
+
+		// отрисовка текста на кнопке
+		ctx.font = '20px Condensed';
+		ctx.fillStyle = '#F4F3FC';
+		ctx.fillText('Предыдущий', ctx.canvas.width/2 - 154, ctx.canvas.height/2 + 52);
+	}
+        if(button4.visible==true)
+	{
+		// отрисовка кнопки
+		ctx.drawImage(button4.image, 0, button4.imageShift, button4.w, button4.h, button4.x, button4.y, button4.w, button4.h);
+
+		// отрисовка текста на кнопке
+		ctx.font = '20px Condensed';
+		ctx.fillStyle = '#F4F3FC';
+		ctx.fillText('Следующий', ctx.canvas.width/2 + 150, ctx.canvas.height/2 + 52);
 	}
 }
 
@@ -267,6 +296,7 @@ function drawScene() { // основная функция отрисовки с�
         if (iBgShiftY < 5) { // Finish position
             bPause = true;
              clear();
+              button2.visible=true;
             // draw score
             ctx.font = '40px Verdana';
             ctx.fillStyle = '#FFF6EC';
@@ -456,12 +486,14 @@ $(function(){
     }
     // загрузка кнопки
     var buttonImage = new Image();
-    buttonImage.src = 'images/menu2.png';
+    buttonImage.src = 'images/menu1.png';
     buttonImage.onload = function() {
     }
-    button = new Button(ctx.canvas.height/2 - 75, ctx.canvas.width/2 - 50, 151, 38, 'normal', buttonImage);//кнопка Играть
-    button1 = new Button(ctx.canvas.height/2 - 75, ctx.canvas.width/2, 151, 38, 'normal', buttonImage); //кнопка Выбор самолета
-    button2 = new Button(10, ctx.canvas.height - 50, 151, 38, 'normal', buttonImage); //кнопка возврат в Меню из диалога Выбора самолета
+    button = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 100, 202, 52, 'normal', buttonImage);//кнопка Играть
+    button1 = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 35, 202, 52, 'normal', buttonImage); //кнопка Выбор самолета
+    button2 = new Button(ctx.canvas.width/2 - 300, ctx.canvas.height/2 + 250, 202, 52, 'normal', buttonImage); //кнопка возврат в Меню из диалога Выбора самолета
+    button3 = new Button(ctx.canvas.width/2 - 250, ctx.canvas.height/2 + 40, 202, 52, 'normal', buttonImage); //кнопка Предыдущий самолет
+    button4 = new Button(ctx.canvas.width/2 + 50, ctx.canvas.height/2 + 40, 202, 52, 'normal', buttonImage); //кнопка Следующий самолет
     
    /* // инициализация пустого облака
     var oCloudImage = new Image();
@@ -520,29 +552,50 @@ $(function(){
 
         var mouseX = e.layerX || 0;
         var mouseY = e.layerY || 0;
+        
+        if (iDialogPage == 2)
+            {
+                if (mouseX >  ctx.canvas.width/2 - 82 && mouseX <  ctx.canvas.width/2 - 82+170 && mouseY > ctx.canvas.height/2 - 175 && mouseY < ctx.canvas.height/2 - 175+170) {
+                    bplane = true;
+                }
+            }
 
         // поведение кнопок
         if(button.visible)
         {        
             if (mouseX > button.x && mouseX < button.x+button.w && mouseY > button.y && mouseY < button.y+button.h) {
                 button.state = 'pressed';
-                button.imageShift = 82;
+                button.imageShift = 112;
             }
         }
         if(button1.visible)
         {        
             if (mouseX > button1.x && mouseX < button1.x+button1.w && mouseY > button1.y && mouseY < button1.y+button1.h) {
                 button1.state = 'pressed';
-                button1.imageShift = 82;
+                button1.imageShift = 112;
             }
         }
         if(button2.visible)
         {        
             if (mouseX > button2.x && mouseX < button2.x+button2.w && mouseY > button2.y && mouseY < button2.y+button2.h) {
                 button2.state = 'pressed';
-                button2.imageShift = 82;
+                button2.imageShift = 112;
             }
         }   
+        if(button3.visible)
+        {        
+            if (mouseX > button3.x && mouseX < button3.x+button3.w && mouseY > button3.y && mouseY < button3.y+button3.h) {
+                button3.state = 'pressed';
+                button3.imageShift = 112;
+            }
+        }  
+        if(button4.visible)
+        {        
+            if (mouseX > button4.x && mouseX < button4.x+button4.w && mouseY > button4.y && mouseY < button4.y+button4.h) {
+                button4.state = 'pressed';
+                button4.imageShift = 112;
+            }
+        }  
     });
 
     $('#scene').mousemove(function(e) { // привязываем событие движения мыши
@@ -557,7 +610,7 @@ $(function(){
                 button.imageShift = 0;
                 if (mouseX > button.x && mouseX < button.x+button.w && mouseY > button.y && mouseY < button.y+button.h) {
                     button.state = 'hover';
-                    button.imageShift = 40;
+                    button.imageShift = 54;
                 }
             }
         }
@@ -568,7 +621,7 @@ $(function(){
                 button1.imageShift = 0;
                 if (mouseX > button1.x && mouseX < button1.x+button1.w && mouseY > button1.y && mouseY < button1.y+button1.h) {
                     button1.state = 'hover';
-                    button1.imageShift = 40;
+                    button1.imageShift = 54;
                 }
             }
         }
@@ -579,7 +632,29 @@ $(function(){
                 button2.imageShift = 0;
                 if (mouseX > button2.x && mouseX < button2.x+button2.w && mouseY > button2.y && mouseY < button2.y+button2.h) {
                     button2.state = 'hover';
-                    button2.imageShift = 40;
+                    button2.imageShift = 54;
+                }
+            }
+        }
+        if(button3.visible)
+        {
+            if (button3.state != 'pressed') {
+                button3.state = 'normal';
+                button3.imageShift = 0;
+                if (mouseX > button3.x && mouseX < button3.x+button3.w && mouseY > button3.y && mouseY < button3.y+button3.h) {
+                    button3.state = 'hover';
+                    button3.imageShift = 54;
+                }
+            }
+        }
+        if(button4.visible)
+        {
+            if (button4.state != 'pressed') {
+                button4.state = 'normal';
+                button4.imageShift = 0;
+                if (mouseX > button4.x && mouseX < button4.x+button4.w && mouseY > button4.y && mouseY < button4.y+button4.h) {
+                    button4.state = 'hover';
+                    button4.imageShift = 54;
                 }
             }
         }
@@ -595,7 +670,7 @@ $(function(){
                 bDrawDialog = !bDrawDialog;
                 button.visible=false;
                 button1.visible=false;
-                button2.visible=false;
+                button2.visible=true;
             }
                 
         }
@@ -629,6 +704,38 @@ $(function(){
         }
         button2.state = 'normal';
         button2.imageShift = 0;
+        if(button3.visible)
+        {
+            if (button3.state === 'pressed') {
+               // iDialogPage = 1;
+            //    bDrawDialog = !bDrawDialog;
+               // button.visible=false;
+              //  button1.visible=false;
+              button3.visible=false;
+              button4.visible=false;
+              button.visible=false;
+              button1.visible=false;
+            }
+
+        }
+        button3.state = 'normal';
+        button3.imageShift = 0;
+        if(button4.visible)
+        {
+            if (button4.state === 'pressed') {
+                //iDialogPage = 1;
+            //    bDrawDialog = !bDrawDialog;
+               // button.visible=false;
+              //  button1.visible=false;
+              button3.visible=false;
+              button4.visible=false;
+              button.visible=false;
+              button1.visible=false;
+            }
+
+        }
+        button4.state = 'normal';
+        button4.imageShift = 0;
     });
     
    // setInterval(drawScene, 30); // повторение кадров
