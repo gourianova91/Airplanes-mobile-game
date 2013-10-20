@@ -296,7 +296,7 @@ function drawScene() { // основная функция отрисовки с�
         if (iBgShiftY < 5) { // Finish position
             bPause = true;
              clear();
-              button2.visible=true;
+             // button2.visible=true;
             // draw score
             ctx.font = '40px Verdana';
             ctx.fillStyle = '#FFF6EC';
@@ -670,7 +670,9 @@ $(function(){
                 bDrawDialog = !bDrawDialog;
                 button.visible=false;
                 button1.visible=false;
-                button2.visible=true;
+                button2.visible=false;
+                button3.visible=false;
+                button4.visible=false;
             }
                 
         }
@@ -683,7 +685,9 @@ $(function(){
             //    bDrawDialog = !bDrawDialog;
                 button.visible=false;
                 button1.visible=false;
-                button2.visible=false;
+                button2.visible=true;
+                button3.visible=true;
+                button4.visible=true;
             }
 
         }
@@ -696,9 +700,11 @@ $(function(){
             //    bDrawDialog = !bDrawDialog;
                // button.visible=false;
               //  button1.visible=false;
-              button2.visible=false;
               button.visible=true;
               button1.visible=true;
+              button2.visible=false;
+              button3.visible=false;
+              button4.visible=false;
             }
 
         }
@@ -711,10 +717,11 @@ $(function(){
             //    bDrawDialog = !bDrawDialog;
                // button.visible=false;
               //  button1.visible=false;
-              button3.visible=false;
-              button4.visible=false;
               button.visible=false;
               button1.visible=false;
+              button2.visible=true;
+              button3.visible=true;
+              button4.visible=true;
             }
 
         }
@@ -727,10 +734,11 @@ $(function(){
             //    bDrawDialog = !bDrawDialog;
                // button.visible=false;
               //  button1.visible=false;
-              button3.visible=false;
-              button4.visible=false;
               button.visible=false;
               button1.visible=false;
+              button2.visible=true;
+              button3.visible=true;
+              button4.visible=true;
             }
 
         }
