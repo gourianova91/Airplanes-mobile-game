@@ -192,11 +192,28 @@ function drawDialog() { // функция отрисовки диалога
             button2.visible=true; 
             button3.visible=true;
             button4.visible=true;
-            ctx.strokeRect(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 200, 200, 200);
+            if (!bplane)
+            {
+               ctx.lineWidth = 2;
+               ctx.strokeStyle = 'rgba(224, 224, 224, 0.4)';
+               ctx.strokeRect(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 200, 200, 200);
+            }
+            else
+            {
+               ctx.lineWidth = 5;
+               ctx.strokeStyle = 'rgba(255, 255, 204, 0.4)';
+               ctx.strokeRect(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 200, 200, 200);
+            }
              // draw plane
-            ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2 - 5, plane.y - plane.h/2 - 360, plane.w, plane.h);
-           // ctx.font = '24px Calibri';
-           // ctx.fillText('Выбор самолета', ctx.canvas.width/2, 220);
+            if (iplane == 1)
+            {
+               ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2 - 5, plane.y - plane.h/2 - 360, plane.w, plane.h);
+            }
+            else if (iplane == 2)
+           {
+              ctx.font = '24px Calibri';
+              ctx.fillText('Самолет №2', ctx.canvas.width/2, ctx.canvas.height/2 - 120);
+           }
         }
     }
 }
@@ -314,7 +331,10 @@ function drawScene() { // основная функция отрисовки с�
         ctx.drawImage(backgroundImage, 0, 0 + iBgShiftY, 700, 700, 0, 0, 700, 700);
 
         // draw plane
-        ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2, plane.y - plane.h/2, plane.w, plane.h);
+        if (iplane == 1)
+        {
+           ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2, plane.y - plane.h/2, plane.w, plane.h);
+        }
 
         /*/ draw rockets
         if (rockets.length > 0) {
@@ -555,7 +575,7 @@ $(function(){
         
         if (iDialogPage == 2)
             {
-                if (mouseX >  ctx.canvas.width/2 - 82 && mouseX <  ctx.canvas.width/2 - 82+170 && mouseY > ctx.canvas.height/2 - 175 && mouseY < ctx.canvas.height/2 - 175+170) {
+                if (mouseX >  ctx.canvas.width/2 - 100 && mouseX <  ctx.canvas.width/2 - 100 + 200 && mouseY > ctx.canvas.height/2 - 200 && mouseY < ctx.canvas.height/2 - 200 + 200) {
                     bplane = true;
                 }
             }
@@ -696,10 +716,7 @@ $(function(){
         if(button2.visible)
         {
             if (button2.state === 'pressed') {
-                iDialogPage = 1;
-            //    bDrawDialog = !bDrawDialog;
-               // button.visible=false;
-              //  button1.visible=false;
+              iDialogPage = 1;
               button.visible=true;
               button1.visible=true;
               button2.visible=false;
@@ -713,10 +730,11 @@ $(function(){
         if(button3.visible)
         {
             if (button3.state === 'pressed') {
-               // iDialogPage = 1;
-            //    bDrawDialog = !bDrawDialog;
-               // button.visible=false;
-              //  button1.visible=false;
+              bplane = false;
+              if (iplane > 1 && iplane <= 2)
+              {
+                  iplane = iplane - 1;
+              }
               button.visible=false;
               button1.visible=false;
               button2.visible=true;
@@ -730,10 +748,11 @@ $(function(){
         if(button4.visible)
         {
             if (button4.state === 'pressed') {
-                //iDialogPage = 1;
-            //    bDrawDialog = !bDrawDialog;
-               // button.visible=false;
-              //  button1.visible=false;
+              bplane = false;
+              if (iplane >= 1 && iplane < 2)
+              {
+                  iplane = iplane + 1;
+              }
               button.visible=false;
               button1.visible=false;
               button2.visible=true;
