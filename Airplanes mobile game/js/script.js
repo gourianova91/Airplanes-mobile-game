@@ -5,9 +5,13 @@ var backgroundImage1;
 var iBgShiftX = 100;
 var button;
 var button1;
+var button2;
+var button3;
+var button4;
+var pausebutton;
 var bDrawDialog = true;
 var iDialogPage = 1;
-
+var pauseclick = 0;
 //var oRocketImage;
 var oExplosionImage;
 //var introImage;
@@ -59,7 +63,7 @@ function Button(x, y, w, h, state, image) {
     this.state = state;
     this.imageShift = 0;
     this.image = image;
-	this.visible= true;
+    this.visible= true;
 }
 
 function Plane(x, y, w, h, image) {
@@ -135,13 +139,31 @@ function displayIntro() {
 
     var randX = getRand(0, canvas.height - iCloudH);
     var chanse = getRand(0,100);
-    if(chanse <= 70&&!bDrawDialog)
+    if(chanse <= 30 && !bDrawDialog && !bPause)
         {
           clouds.push(new Cloud(randX, 0, iCloudW, iCloudH, - getRand(iCloudSpeedMin, iCloudSpeedMax), oCloudImage)); //скорость теперь настраивается перменными
         }
     var interval = getRand(900, 1000);
    // var interval = getRand(5000, 10000);
     enTimer = setInterval(addCloud, interval); // повторение кадров
+    }
+    
+    //отрисовка полупрозрачного градиента
+    function drawGradient()
+    {
+          var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
+          bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.3)');
+          bg_gradient.addColorStop(1.0, 'rgba(224, 224, 224, 0.3)');
+
+          ctx.beginPath(); // начало фигуры
+          ctx.fillStyle = bg_gradient;
+          ctx.moveTo(0, 0);
+          ctx.lineTo(ctx.canvas.width - 2, 0);
+          ctx.lineTo(ctx.canvas.width - 2, ctx.canvas.height - 2);
+          ctx.lineTo(0, ctx.canvas.height - 2);
+          ctx.lineTo(0, 0);
+          ctx.closePath(); // конец фигуры
+          ctx.fill(); // заполнение фигуры*
     }
     
 // фукнции отрисовки :
@@ -152,7 +174,8 @@ function clear() { // функция очистки canvas
 
 function drawDialog() { // функция отрисовки диалога
     if (bDrawDialog) {
-        var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
+        drawGradient();
+      /*  var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
         bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.8)');
         bg_gradient.addColorStop(1.0, 'rgba(224, 224, 224, 0.8)');
 
@@ -164,7 +187,7 @@ function drawDialog() { // функция отрисовки диалога
         ctx.lineTo(0, ctx.canvas.height - 2);
         ctx.lineTo(0, 0);
         ctx.closePath(); // конец фигуры
-		ctx.fill(); // заполнение фигуры
+		ctx.fill(); // заполнение фигуры*/
 
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'rgba(224, 224, 224, 0.4)';
@@ -187,11 +210,13 @@ function drawDialog() { // функция отрисовки диалога
             button2.visible=false;
             button3.visible=false;
             button4.visible=false;
+            pausebutton.visible=false;
         } else if (iDialogPage === 2) {
             ctx.fillText('Выбор самолета', ctx.canvas.width/2, ctx.canvas.height/2 - 300);
             button2.visible=true; 
             button3.visible=true;
             button4.visible=true;
+            pausebutton.visible=false;
             if (!bplane)
             {
                ctx.lineWidth = 2;
@@ -215,6 +240,10 @@ function drawDialog() { // функция отрисовки диалога
               ctx.fillText('Самолет №2', ctx.canvas.width/2, ctx.canvas.height/2 - 120);
            }
         }
+    }
+    else if (!bDrawDialog)
+    {
+        pausebutton.visible=true;
     }
 }
 
@@ -269,8 +298,12 @@ function drawButton() { // функция отрисовки кнопки
 		ctx.fillStyle = '#F4F3FC';
 		ctx.fillText('Следующий', ctx.canvas.width/2 + 150, ctx.canvas.height/2 + 52);
 	}
+        if(pausebutton.visible==true)
+        {
+		// отрисовка кнопки
+		ctx.drawImage(pausebutton.image, 0, pausebutton.imageShift, pausebutton.w, pausebutton.h, pausebutton.x, pausebutton.y, pausebutton.w, pausebutton.h);
+        }
 }
-
 
 // функции рисования:
 function drawScene() { // основная функция отрисовки сцены
@@ -312,8 +345,7 @@ function drawScene() { // основная функция отрисовки с�
         iBgShiftY -= 2; // move main ground
         if (iBgShiftY < 5) { // Finish position
             bPause = true;
-             clear();
-             // button2.visible=true;
+            //clear();
             // draw score
             ctx.font = '40px Verdana';
             ctx.fillStyle = '#FFF6EC';
@@ -335,7 +367,14 @@ function drawScene() { // основная функция отрисовки с�
         {
            ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2, plane.y - plane.h/2, plane.w, plane.h);
         }
-
+        if (iplane == 2)
+        {
+           ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2, plane.y - plane.h/2, plane.w, plane.h);
+        }
+        
+        // draw pause
+        ctx.drawImage(pausebutton.image, 0, pausebutton.imageShift, pausebutton.w, pausebutton.h, pausebutton.x, pausebutton.y, pausebutton.w, pausebutton.h);
+        
         /*/ draw rockets
         if (rockets.length > 0) {
             for (var key in rockets) {
@@ -425,12 +464,12 @@ function drawScene() { // основная функция отрисовки с�
                 }
             }
         }
-    }
         // display life and score
         ctx.font = '14px Verdana';
         ctx.fillStyle = '#FFF6EC';
         ctx.fillText('Life: ' + iLife + ' / 100', 55, 660);
         ctx.fillText('Score: ' + iScore * 10, 55, 680);
+    }       
     }
 }
 
@@ -504,16 +543,22 @@ $(function(){
     oPlaneImage.onload = function() {
         plane = new Plane(canvas.width / 2, canvas.height - 100, planeW, planeH, oPlaneImage);
     }
-    // загрузка кнопки
+    // загрузка кнопки меню
     var buttonImage = new Image();
     buttonImage.src = 'images/menu1.png';
     buttonImage.onload = function() {
+    }
+    // загрузка кнопки паузы
+    var pauseImage = new Image();
+    pauseImage.src = 'images/pause-button1.png';
+    pauseImage.onload = function() {
     }
     button = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 100, 202, 52, 'normal', buttonImage);//кнопка Играть
     button1 = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 35, 202, 52, 'normal', buttonImage); //кнопка Выбор самолета
     button2 = new Button(ctx.canvas.width/2 - 300, ctx.canvas.height/2 + 250, 202, 52, 'normal', buttonImage); //кнопка возврат в Меню из диалога Выбора самолета
     button3 = new Button(ctx.canvas.width/2 - 250, ctx.canvas.height/2 + 40, 202, 52, 'normal', buttonImage); //кнопка Предыдущий самолет
     button4 = new Button(ctx.canvas.width/2 + 50, ctx.canvas.height/2 + 40, 202, 52, 'normal', buttonImage); //кнопка Следующий самолет
+    pausebutton = new Button(ctx.canvas.width/2 - 345, ctx.canvas.height/2 - 345, 38, 38, 'normal', pauseImage); //кнопка паузы
     
    /* // инициализация пустого облака
     var oCloudImage = new Image();
@@ -616,6 +661,13 @@ $(function(){
                 button4.imageShift = 112;
             }
         }  
+        if(pausebutton.visible)
+        {        
+            if (mouseX > pausebutton.x && mouseX < pausebutton.x+pausebutton.w && mouseY > pausebutton.y && mouseY < pausebutton.y+pausebutton.h) {
+                pausebutton.state = 'pressed';
+                pausebutton.imageShift = 0;
+            }
+        }    
     });
 
     $('#scene').mousemove(function(e) { // привязываем событие движения мыши
@@ -678,6 +730,17 @@ $(function(){
                 }
             }
         }
+        if(pausebutton.visible)
+        {
+            if (pausebutton.state != 'pressed') {
+                pausebutton.state = 'normal';
+                pausebutton.imageShift = 0;
+                if (mouseX > pausebutton.x && mouseX < pausebutton.x+pausebutton.w && mouseY > pausebutton.y && mouseY < pausebutton.y+pausebutton.h) {
+                    pausebutton.state = 'hover';
+                    pausebutton.imageShift = 0;
+                }
+            }
+        }
     });
 
     $('#scene').mouseup(function(e) { // привязываем событие отжатия кнопки
@@ -713,6 +776,7 @@ $(function(){
         }
         button1.state = 'normal';
         button1.imageShift = 0;
+        //кнопка возврат в Меню из диалога Выбора самолета
         if(button2.visible)
         {
             if (button2.state === 'pressed') {
@@ -763,6 +827,50 @@ $(function(){
         }
         button4.state = 'normal';
         button4.imageShift = 0;
+        if(pausebutton.visible)
+        {
+            if (pausebutton.state === 'pressed') {
+             /* button.visible=false;
+              button1.visible=false;
+              button2.visible=false;
+              button3.visible=false;
+              button4.visible=false;
+              bDrawDialog = true;
+              iDialogPage = 1;
+              button.visible=true;
+              button1.visible=true;
+              button2.visible=false;
+              button3.visible=false;
+              button4.visible=false;*/
+                
+              if (pauseclick == 0)
+              {
+                drawGradient();
+                bPause = true;
+                pauseclick = 1;
+              }
+              else if (pauseclick == 1)
+              {
+                bPause = false;
+                pauseclick = 0;
+              }
+             /* var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
+              bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.3)');
+              bg_gradient.addColorStop(1.0, 'rgba(224, 224, 224, 0.3)');
+
+              ctx.beginPath(); // начало фигуры
+              ctx.fillStyle = bg_gradient;
+              ctx.moveTo(0, 0);
+              ctx.lineTo(ctx.canvas.width - 2, 0);
+              ctx.lineTo(ctx.canvas.width - 2, ctx.canvas.height - 2);
+              ctx.lineTo(0, ctx.canvas.height - 2);
+              ctx.lineTo(0, 0);
+              ctx.closePath(); // конец фигуры
+              ctx.fill(); // заполнение фигуры*/
+            }
+        }
+        pausebutton.state = 'normal';
+        pausebutton.imageShift = 0;
     });
     
    // setInterval(drawScene, 30); // повторение кадров
