@@ -9,6 +9,8 @@ var button2;
 var button3;
 var button4;
 var pausebutton;
+var button5;
+var button6;
 var bDrawDialog = true;
 var iDialogPage = 1;
 var pauseclick = 0;
@@ -174,6 +176,8 @@ function clear() { // функция очистки canvas
 
 function drawDialog() { // функция отрисовки диалога
     if (bDrawDialog) {
+        // draw background
+        ctx.drawImage(backgroundImage, 0, 0 + iBgShiftY, 700, 700, 0, 0, 700, 700);
         drawGradient();
       /*  var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
         bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.8)');
@@ -211,12 +215,16 @@ function drawDialog() { // функция отрисовки диалога
             button3.visible=false;
             button4.visible=false;
             pausebutton.visible=false;
+            button5.visible=false;
+            button6.visible=false;
         } else if (iDialogPage === 2) {
             ctx.fillText('Выбор самолета', ctx.canvas.width/2, ctx.canvas.height/2 - 300);
             button2.visible=true; 
             button3.visible=true;
             button4.visible=true;
             pausebutton.visible=false;
+            button5.visible=false;
+            button6.visible=false;
             if (!bplane)
             {
                ctx.lineWidth = 2;
@@ -303,6 +311,26 @@ function drawButton() { // функция отрисовки кнопки
 		// отрисовка кнопки
 		ctx.drawImage(pausebutton.image, 0, pausebutton.imageShift, pausebutton.w, pausebutton.h, pausebutton.x, pausebutton.y, pausebutton.w, pausebutton.h);
         }
+        if(button5.visible==true)
+	{
+		// отрисовка кнопки
+		ctx.drawImage(button5.image, 0, button5.imageShift, button5.w, button5.h, button5.x, button5.y, button5.w, button5.h);
+
+		// отрисовка текста на кнопке
+		ctx.font = '19px Condensed';
+		ctx.fillStyle = '#F4F3FC';
+		ctx.fillText('Сохранить и выйти', ctx.canvas.width/2 - 3, ctx.canvas.height/2 - 87);
+	}
+        if(button6.visible==true)
+	{
+		// отрисовка кнопки
+		ctx.drawImage(button6.image, 0, button6.imageShift, button6.w, button6.h, button6.x, button6.y, button6.w, button6.h);
+
+		// отрисовка текста на кнопке
+		ctx.font = '19px Condensed';
+		ctx.fillStyle = '#F4F3FC';
+		ctx.fillText('Выйти без сохранения', ctx.canvas.width/2 - 2, ctx.canvas.height/2 - 23);
+	}
 }
 
 // функции рисования:
@@ -559,6 +587,8 @@ $(function(){
     button3 = new Button(ctx.canvas.width/2 - 250, ctx.canvas.height/2 + 40, 202, 52, 'normal', buttonImage); //кнопка Предыдущий самолет
     button4 = new Button(ctx.canvas.width/2 + 50, ctx.canvas.height/2 + 40, 202, 52, 'normal', buttonImage); //кнопка Следующий самолет
     pausebutton = new Button(ctx.canvas.width/2 - 345, ctx.canvas.height/2 - 345, 38, 38, 'normal', pauseImage); //кнопка паузы
+    button5 = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 100, 202, 52, 'normal', buttonImage); //кнопка Сохранить и выйти
+    button6 = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 35, 202, 52, 'normal', buttonImage); //кнопка Выйти без сохранения
     
    /* // инициализация пустого облака
     var oCloudImage = new Image();
@@ -667,7 +697,21 @@ $(function(){
                 pausebutton.state = 'pressed';
                 pausebutton.imageShift = 0;
             }
-        }    
+        }
+        if(button5.visible)
+        {        
+            if (mouseX > button5.x && mouseX < button5.x+button5.w && mouseY > button5.y && mouseY < button5.y+button5.h) {
+                button5.state = 'pressed';
+                button5.imageShift = 112;
+            }
+        }  
+        if(button6.visible)
+        {        
+            if (mouseX > button6.x && mouseX < button6.x+button6.w && mouseY > button6.y && mouseY < button6.y+button6.h) {
+                button6.state = 'pressed';
+                button6.imageShift = 112;
+            }
+        } 
     });
 
     $('#scene').mousemove(function(e) { // привязываем событие движения мыши
@@ -741,6 +785,28 @@ $(function(){
                 }
             }
         }
+        if(button5.visible)
+        {
+            if (button5.state != 'pressed') {
+                button5.state = 'normal';
+                button5.imageShift = 0;
+                if (mouseX > button5.x && mouseX < button5.x+button5.w && mouseY > button5.y && mouseY < button5.y+button5.h) {
+                    button5.state = 'hover';
+                    button5.imageShift = 54;
+                }
+            }
+        }
+        if(button6.visible)
+        {
+            if (button6.state != 'pressed') {
+                button6.state = 'normal';
+                button6.imageShift = 0;
+                if (mouseX > button6.x && mouseX < button6.x+button6.w && mouseY > button6.y && mouseY < button6.y+button6.h) {
+                    button6.state = 'hover';
+                    button6.imageShift = 54;
+                }
+            }
+        }
     });
 
     $('#scene').mouseup(function(e) { // привязываем событие отжатия кнопки
@@ -750,7 +816,8 @@ $(function(){
         {
             if (button.state === 'pressed') {
                 iDialogPage = 0;
-                bDrawDialog = !bDrawDialog;
+                bDrawDialog = false;
+                bPause = false;
                 button.visible=false;
                 button1.visible=false;
                 button2.visible=false;
@@ -765,7 +832,6 @@ $(function(){
         {
             if (button1.state === 'pressed') {
                 iDialogPage = 2;
-            //    bDrawDialog = !bDrawDialog;
                 button.visible=false;
                 button1.visible=false;
                 button2.visible=true;
@@ -830,47 +896,68 @@ $(function(){
         if(pausebutton.visible)
         {
             if (pausebutton.state === 'pressed') {
-             /* button.visible=false;
-              button1.visible=false;
-              button2.visible=false;
-              button3.visible=false;
-              button4.visible=false;
-              bDrawDialog = true;
-              iDialogPage = 1;
-              button.visible=true;
-              button1.visible=true;
-              button2.visible=false;
-              button3.visible=false;
-              button4.visible=false;*/
-                
               if (pauseclick == 0)
               {
                 drawGradient();
                 bPause = true;
                 pauseclick = 1;
+                button5.visible=true;
+                button6.visible=true;
               }
               else if (pauseclick == 1)
               {
                 bPause = false;
                 pauseclick = 0;
+                button5.visible=false;
+                button6.visible=false
               }
-             /* var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
-              bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.3)');
-              bg_gradient.addColorStop(1.0, 'rgba(224, 224, 224, 0.3)');
-
-              ctx.beginPath(); // начало фигуры
-              ctx.fillStyle = bg_gradient;
-              ctx.moveTo(0, 0);
-              ctx.lineTo(ctx.canvas.width - 2, 0);
-              ctx.lineTo(ctx.canvas.width - 2, ctx.canvas.height - 2);
-              ctx.lineTo(0, ctx.canvas.height - 2);
-              ctx.lineTo(0, 0);
-              ctx.closePath(); // конец фигуры
-              ctx.fill(); // заполнение фигуры*/
             }
         }
         pausebutton.state = 'normal';
         pausebutton.imageShift = 0;
+        //кнопка Сохранить и выйти
+        if(button5.visible)
+        {
+            if (button5.state === 'pressed') {
+              clear();
+              bDrawDialog = true;
+              drawDialog();
+              iDialogPage = 1;
+              button.visible=true;
+              button1.visible=true;
+              button2.visible=false;
+              button3.visible=false;
+              button4.visible=false;
+              button5.visible=false;
+              button6.visible=false;
+            }
+
+        }
+        button5.state = 'normal';
+        button5.imageShift = 0;
+        //кнопка Выйти без сохранения
+        if(button6.visible)
+        {
+            if (button6.state === 'pressed') {
+              clear();
+              bDrawDialog = true;
+              drawDialog();
+              iDialogPage = 1;
+              iBgShiftY -= 2;
+              iScore = 0;
+              iLife = 100;
+              button.visible=true;
+              button1.visible=true;
+              button2.visible=false;
+              button3.visible=false;
+              button4.visible=false;
+              button5.visible=false;
+              button6.visible=false;
+            }
+
+        }
+        button6.state = 'normal';
+        button6.imageShift = 0;
     });
     
    // setInterval(drawScene, 30); // повторение кадров
