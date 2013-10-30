@@ -5,26 +5,37 @@ var backgroundImage1;
 var iBgShiftX = 100;
 var button;
 var button1;
+var button2;
+var button3;
+var button4;
+var pausebutton;
+var button5;
+var button6;
 var bDrawDialog = true;
 var iDialogPage = 1;
-
-//var oRocketImage;
+var pauseclick = 0;
 var oExplosionImage;
-//var introImage;
 var oCloudImage;
+var oBadoblakoImage;
+var oStarsImage;
 
 var iBgShiftY = 9300; //10000 (level length) - 700 (canvas height)
 var bPause = false; // game pause
 var plane = null; // plane object
-//var rockets = []; // array of rockets
 var clouds = []; // array of clouds
 var explosions = []; // array of explosions
+var badoblako = [];
+var stars = [];
 var planeW = 120; // plane width
 var planeH = 160; // plane height
 var iSprPos = 1; // initial sprite frame for plane
 var iMoveDir = 1; // move direction
 var iCloudW = 131; // cloud width
 var iCloudH = 68; // cloud height
+var iBadoblakoW = 174;
+var iBadoblakoH = 100;
+var istarW = 20;
+var istarH = 20;
 var iRocketSpeed = 10; // initial rocket speed
 var iCloudSpeed = 3; // initial cloud speed
 var iCloudSpeedMin = 3; // минимальная скорость облака
@@ -37,18 +48,6 @@ var enTimer = null; // random timer for a new cloud
 var bplane = false; //выбор самолета
 var iplane = 1; //по умолчанию - 1 самолет
 // -------------------------------------------------------------
-// -------------------------------------------------------------
-// игровые объекты
-/*var cloud = null; 
-var plane=null;
-var cloud = []; //облака
-
-var iCloudW = 32; // ширина облака
-var iCloudH = 194; // высота облака
-var planeW = 211; // plane width
-var planeH = 40; // plane height
-var iCloudSpeedMin = 2; // минимальная скорость облака
-var iCloudSpeedMax = 5; //максимальная скорость облака*/
 
 // объекты:
 function Button(x, y, w, h, state, image) {
@@ -59,7 +58,7 @@ function Button(x, y, w, h, state, image) {
     this.state = state;
     this.imageShift = 0;
     this.image = image;
-	this.visible= true;
+    this.visible= true;
 }
 
 function Plane(x, y, w, h, image) {
@@ -70,14 +69,7 @@ function Plane(x, y, w, h, image) {
     this.image = image;
     this.bDrag = false;
 }
-/*function Rocket(x, y, w, h, speed, image) {
-    this.x = x;
-    this.y = y;
-    this.w = w;
-    this.h = h;
-    this.speed = speed;
-    this.image = image;
-}*/
+
 function Cloud(x, y, w, h, speed, image) {
     this.x = x;
     this.y = y;
@@ -94,26 +86,24 @@ function Explosion(x, y, w, h, sprite, image) {
     this.sprite = sprite;
     this.image = image;
 }
-
-/*function Cloud(x, y, w, h, speed, image) {
+function Badoblako(x, y, w, h, sprite, image, speed) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.sprite = sprite;
+    this.image = image;
     this.speed = speed;
-    this.image = image;
 }
-
-function Plane(x, y, w, h, image) {
+function Stars(x, y, w, h, sprite, image, speed){
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.sprite = sprite;
     this.image = image;
-    //this.bDrag = false;
-    this.fuel = 666;
-    this.fuelMax=1000;
-}*/
+    this.speed = speed;
+}
 
 // -------------------------------------------------------------
 // получить случайное число между X и Y
@@ -128,6 +118,18 @@ function displayIntro() {
 
             // and add first cloud
             addCloud();
+            
+                setInterval(function(){
+                 var rand = Math.random()*100;
+                 if(rand  <= 30 && !bDrawDialog && !bPause){
+                     //  addCloud();
+                       addStars(); 
+                 } else if(rand  <= 10 && !bDrawDialog && !bPause) {
+                     addBadoblako();
+                     addStars();
+                 }else if(!bDrawDialog && !bPause)
+                    addStars();
+            },500);
 }
     // Add Cloud function (adds a new cloud randomly)
     function addCloud() {
@@ -135,7 +137,7 @@ function displayIntro() {
 
     var randX = getRand(0, canvas.height - iCloudH);
     var chanse = getRand(0,100);
-    if(chanse <= 70&&!bDrawDialog)
+    if(chanse <= 30 && !bDrawDialog && !bPause)
         {
           clouds.push(new Cloud(randX, 0, iCloudW, iCloudH, - getRand(iCloudSpeedMin, iCloudSpeedMax), oCloudImage)); //скорость теперь настраивается перменными
         }
@@ -144,15 +146,75 @@ function displayIntro() {
     enTimer = setInterval(addCloud, interval); // повторение кадров
     }
     
-// фукнции отрисовки :
+    function addBadoblako() {
+   // clearInterval(enTimer);
 
+    var randX = getRand(0, canvas.height - iBadoblakoH);
+    badoblako.push(new Badoblako(randX, 0, iBadoblakoW, iBadoblakoH, 0 , oBadoblakoImage, -iCloudSpeed));
+
+    //var interval = getRand(1000, 2000);
+    //enTimer = setInterval(addBadoblako, interval); // loop
+}
+
+function addStars() {
+            //for (var ekey in enemies){    
+            var rand1 = Math.random()*100; 
+                if (rand1 <=40){ 
+                    for (var okey in badoblako) {
+                        if (badoblako[okey] != undefined) {
+                             //var rand2 = Math.random()*100;
+//                             console.log( badoblako[okey].x);
+                                if(badoblako[okey].x < 400){
+                                    var randX = getRand((badoblako[okey].x + badoblako[okey].w), 550);
+                                }else 
+                                    var randX = getRand(0, badoblako[okey].x);     
+                        }
+                    }
+                } else if(rand1 <=60){
+                    for (var ekey in clouds){
+                        if (clouds[ekey] != undefined){
+                            if(clouds[ekey].x < 400){
+                                var randX = getRand((clouds[ekey].x + clouds[ekey].w), 550);
+                            }else 
+                                var randX = getRand(0, clouds[ekey].x);
+                        }
+                    }  
+                } else 
+                    var randX = getRand(0, canvas.height); 
+//    console.log(randX); 
+
+    stars.push(new Stars(randX, 0, istarW, istarH, 0 , oStarsImage, -iCloudSpeed));
+}
+    
+    //отрисовка полупрозрачного градиента
+    function drawGradient()
+    {
+          var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
+          bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.3)');
+          bg_gradient.addColorStop(1.0, 'rgba(224, 224, 224, 0.3)');
+
+          ctx.beginPath(); // начало фигуры
+          ctx.fillStyle = bg_gradient;
+          ctx.moveTo(0, 0);
+          ctx.lineTo(ctx.canvas.width - 2, 0);
+          ctx.lineTo(ctx.canvas.width - 2, ctx.canvas.height - 2);
+          ctx.lineTo(0, ctx.canvas.height - 2);
+          ctx.lineTo(0, 0);
+          ctx.closePath(); // конец фигуры
+          ctx.fill(); // заполнение фигуры*
+    }
+    
+// фукнции отрисовки :
 function clear() { // функция очистки canvas
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
 function drawDialog() { // функция отрисовки диалога
     if (bDrawDialog) {
-        var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
+        // draw background
+        ctx.drawImage(backgroundImage, 0, 0 + iBgShiftY, 700, 700, 0, 0, 700, 700);
+        drawGradient();
+      /*  var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
         bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.8)');
         bg_gradient.addColorStop(1.0, 'rgba(224, 224, 224, 0.8)');
 
@@ -164,8 +226,7 @@ function drawDialog() { // функция отрисовки диалога
         ctx.lineTo(0, ctx.canvas.height - 2);
         ctx.lineTo(0, 0);
         ctx.closePath(); // конец фигуры
-		ctx.fill(); // заполнение фигуры
-
+		ctx.fill(); // заполнение фигуры*/
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'rgba(224, 224, 224, 0.4)';
         ctx.stroke(); // отрисовка границы
@@ -187,34 +248,44 @@ function drawDialog() { // функция отрисовки диалога
             button2.visible=false;
             button3.visible=false;
             button4.visible=false;
+            pausebutton.visible=false;
+            button5.visible=false;
+            button6.visible=false;
         } else if (iDialogPage === 2) {
             ctx.fillText('Выбор самолета', ctx.canvas.width/2, ctx.canvas.height/2 - 300);
             button2.visible=true; 
             button3.visible=true;
             button4.visible=true;
+            pausebutton.visible=false;
+            button5.visible=false;
+            button6.visible=false;
             if (!bplane)
-                {
-                   ctx.strokeRect(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 200, 200, 200);
-                }
-                else
-                    {
-                       ctx.lineWidth = 5;
-                       ctx.strokeStyle = 'rgba(255, 255, 204, 0.4)';
-                       //ctx.stroke(); // отрисовка границы
-                       ctx.strokeRect(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 200, 200, 200);
-                      // bplane = false;
-                    }
+            {
+               ctx.lineWidth = 2;
+               ctx.strokeStyle = 'rgba(224, 224, 224, 0.4)';
+               ctx.strokeRect(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 200, 200, 200);
+            }
+            else
+            {
+               ctx.lineWidth = 5;
+               ctx.strokeStyle = 'rgba(255, 255, 204, 0.4)';
+               ctx.strokeRect(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 200, 200, 200);
+            }
              // draw plane
-             if (iplane == 1)
-             {
-                ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2 - 5, plane.y - plane.h/2 - 360, plane.w, plane.h);
-             }
-             else if (iplane == 2)
-             {
-               ctx.font = '24px Calibri';
-               ctx.fillText('Самолет №2', ctx.canvas.width/2, ctx.canvas.height/2 - 120);
-             }
+            if (iplane == 1)
+            {
+               ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2 - 5, plane.y - plane.h/2 - 360, plane.w, plane.h);
+            }
+            else if (iplane == 2)
+           {
+              ctx.font = '24px Calibri';
+              ctx.fillText('Самолет №2', ctx.canvas.width/2, ctx.canvas.height/2 - 120);
+           }
         }
+    }
+    else if (!bDrawDialog)
+    {
+        pausebutton.visible=true;
     }
 }
 
@@ -269,8 +340,32 @@ function drawButton() { // функция отрисовки кнопки
 		ctx.fillStyle = '#F4F3FC';
 		ctx.fillText('Следующий', ctx.canvas.width/2 + 150, ctx.canvas.height/2 + 52);
 	}
-}
+        if(pausebutton.visible==true)
+        {
+		// отрисовка кнопки
+		ctx.drawImage(pausebutton.image, 0, pausebutton.imageShift, pausebutton.w, pausebutton.h, pausebutton.x, pausebutton.y, pausebutton.w, pausebutton.h);
+        }
+        if(button5.visible==true)
+	{
+		// отрисовка кнопки
+		ctx.drawImage(button5.image, 0, button5.imageShift, button5.w, button5.h, button5.x, button5.y, button5.w, button5.h);
 
+		// отрисовка текста на кнопке
+		ctx.font = '19px Condensed';
+		ctx.fillStyle = '#F4F3FC';
+		ctx.fillText('Сохранить и выйти', ctx.canvas.width/2 - 3, ctx.canvas.height/2 - 87);
+	}
+        if(button6.visible==true)
+	{
+		// отрисовка кнопки
+		ctx.drawImage(button6.image, 0, button6.imageShift, button6.w, button6.h, button6.x, button6.y, button6.w, button6.h);
+
+		// отрисовка текста на кнопке
+		ctx.font = '19px Condensed';
+		ctx.fillStyle = '#F4F3FC';
+		ctx.fillText('Выйти без сохранения', ctx.canvas.width/2 - 2, ctx.canvas.height/2 - 23);
+	}
+}
 
 // функции рисования:
 function drawScene() { // основная функция отрисовки сцены
@@ -312,8 +407,7 @@ function drawScene() { // основная функция отрисовки с�
         iBgShiftY -= 2; // move main ground
         if (iBgShiftY < 5) { // Finish position
             bPause = true;
-             clear();
-             // button2.visible=true;
+            //clear();
             // draw score
             ctx.font = '40px Verdana';
             ctx.fillStyle = '#FFF6EC';
@@ -329,13 +423,20 @@ function drawScene() { // основная функция отрисовки с�
 
         // draw background
         ctx.drawImage(backgroundImage, 0, 0 + iBgShiftY, 700, 700, 0, 0, 700, 700);
-        
+
+        // draw plane
         if (iplane == 1)
         {
-           // draw plane
            ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2, plane.y - plane.h/2, plane.w, plane.h);
         }
-
+        if (iplane == 2)
+        {
+           ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2, plane.y - plane.h/2, plane.w, plane.h);
+        }
+        
+        // draw pause
+        ctx.drawImage(pausebutton.image, 0, pausebutton.imageShift, pausebutton.w, pausebutton.h, pausebutton.x, pausebutton.y, pausebutton.w, pausebutton.h);
+        
         /*/ draw rockets
         if (rockets.length > 0) {
             for (var key in rockets) {
@@ -362,6 +463,49 @@ function drawScene() { // основная функция отрисовки с�
                     // remove an explosion object when it expires
                     if (explosions[key].sprite > 10) {
                         delete explosions[key];
+                    }
+                }
+            }
+        }
+        
+        // draw badoblako
+        if (badoblako.length > 0) {
+            for (var okey in badoblako) {
+                if (badoblako[okey] != undefined) {
+                    ctx.drawImage(badoblako[okey].image, badoblako[okey].sprite*badoblako[okey].w, 0, badoblako[okey].w, badoblako[okey].h, badoblako[okey].x - badoblako[okey].w/2, badoblako[okey].y - badoblako[okey].h/2, badoblako[okey].w, badoblako[okey].h);
+                    var rand = Math.random()*100;
+                    if( 20 >= rand <= 50)
+                    badoblako[okey].sprite++;          
+                    badoblako[okey].y -= badoblako[okey].speed;
+
+                    // remove an enemy object if it is out of screen
+                    if (badoblako[okey].y > canvas.height) {
+                        delete badoblako[okey];
+                    }
+                    //console.log(badoblako[okey].sprite)
+                    if (badoblako[okey].sprite > 5) {
+                        badoblako[okey].sprite = 0;
+                    }
+                }
+            }
+        }
+        //draw stars
+         if (stars.length > 0) {
+            for (var skey in stars) {
+                if (stars[skey] != undefined) {
+                    ctx.drawImage(stars[skey].image, stars[skey].sprite*stars[skey].w, 0, stars[skey].w, stars[skey].h, stars[skey].x - stars[skey].w/2, stars[skey].y - stars[skey].h/2, stars[skey].w, stars[skey].h);
+                    //var rand = Math.random()*100;
+                    //if( 20 >= rand <= 50)
+                    stars[skey].sprite++;          
+                    stars[skey].y -= stars[skey].speed;
+
+                    // remove an enemy object if it is out of screen
+                    if (stars[skey].y > canvas.height) {
+                        delete stars[skey];
+                    }
+                    //console.log(stars[skey].x)
+                    if (stars[skey].sprite > 10) {
+                        stars[skey].sprite = 0;
                     }
                 }
             }
@@ -418,20 +562,51 @@ function drawScene() { // основная функция отрисовки с�
                                 ctx.font = '38px Verdana';
                                 ctx.fillStyle = '#fff';
                                 ctx.fillText('Game over, your score: ' + iScore * 10 + ' points', ctx.canvas.width/2, ctx.canvas.height/2 - 100);
-                               // button2.visible = true;
                                 return;
                             }
                         }
                     }
+                    
+                    //collision with badoblako
+                    if (badoblako[okey] != undefined) {
+                        if (plane.y - plane.h/2 < badoblako[okey].y + badoblako[okey].h/2 && plane.x - plane.w/2 < badoblako[okey].x + badoblako[okey].w && plane.x + plane.w/2 > badoblako[okey].x) {
+                            explosions.push(new Explosion(badoblako[okey].x + badoblako[okey].w / 2, badoblako[okey].y + badoblako[okey].h / 2, 120, 120, 0, oExplosionImage));
+
+                            // delete enemy and make damage
+                            delete badoblako[okey];
+                            iLife -= iDamage;
+
+                            if (iLife <= 0) { // Game over
+                                bPause = true;
+
+                                // draw score
+                                ctx.font = '38px Verdana';
+                                ctx.fillStyle = '#fff';
+                                ctx.fillText('Game over, your score: ' + iScore * 10 + ' points:'+ plane.y, 25, 200);
+                                return;
+                            }
+                        }
+                    }
+                    //collision with stars
+                    if (stars[skey] != undefined) {
+                        if (plane.y - plane.h/2 < stars[skey].y + stars[skey].h/2 && plane.x - plane.w/2 < stars[skey].x + stars[skey].w && plane.x + plane.w/2 > stars[skey].x) {
+                            //explosions.push(new Explosion(badoblako[okey].x + badoblako[okey].w / 2, badoblako[okey].y + badoblako[okey].h / 2, 120, 120, 0, oExplosionImage));
+                            console.log(plane.y);
+                            // delete enemy and make damage
+                            delete stars[skey];
+                            iScore++;
+
+                            }
+                        }
                 }
             }
         }
-    }
         // display life and score
         ctx.font = '14px Verdana';
         ctx.fillStyle = '#FFF6EC';
         ctx.fillText('Life: ' + iLife + ' / 100', 55, 660);
         ctx.fillText('Score: ' + iScore * 10, 55, 680);
+    }       
     }
 }
 
@@ -498,6 +673,16 @@ $(function(){
     oCloudImage = new Image();
     oCloudImage.src = 'images/oblako_1.png';
     oCloudImage.onload = function() { }
+    
+    // initialization of badoblako
+    oBadoblakoImage = new Image();
+    oBadoblakoImage.src = 'images/badoblako.png';
+    oBadoblakoImage.onload = function() { }
+
+    //initialization of stars
+    oStarsImage = new Image();
+    oStarsImage.src = 'images/zvezda.png';
+    oStarsImage.onload = function() { }
 
     // initialization of plane
     var oPlaneImage = new Image();
@@ -505,16 +690,24 @@ $(function(){
     oPlaneImage.onload = function() {
         plane = new Plane(canvas.width / 2, canvas.height - 100, planeW, planeH, oPlaneImage);
     }
-    // загрузка кнопки
+    // загрузка кнопки меню
     var buttonImage = new Image();
     buttonImage.src = 'images/menu1.png';
     buttonImage.onload = function() {
+    }
+    // загрузка кнопки паузы
+    var pauseImage = new Image();
+    pauseImage.src = 'images/pause-button1.png';
+    pauseImage.onload = function() {
     }
     button = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 100, 202, 52, 'normal', buttonImage);//кнопка Играть
     button1 = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 35, 202, 52, 'normal', buttonImage); //кнопка Выбор самолета
     button2 = new Button(ctx.canvas.width/2 - 300, ctx.canvas.height/2 + 250, 202, 52, 'normal', buttonImage); //кнопка возврат в Меню из диалога Выбора самолета
     button3 = new Button(ctx.canvas.width/2 - 250, ctx.canvas.height/2 + 40, 202, 52, 'normal', buttonImage); //кнопка Предыдущий самолет
     button4 = new Button(ctx.canvas.width/2 + 50, ctx.canvas.height/2 + 40, 202, 52, 'normal', buttonImage); //кнопка Следующий самолет
+    pausebutton = new Button(ctx.canvas.width/2 - 345, ctx.canvas.height/2 - 345, 38, 38, 'normal', pauseImage); //кнопка паузы
+    button5 = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 100, 202, 52, 'normal', buttonImage); //кнопка Сохранить и выйти
+    button6 = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 35, 202, 52, 'normal', buttonImage); //кнопка Выйти без сохранения
     
    /* // инициализация пустого облака
     var oCloudImage = new Image();
@@ -542,6 +735,18 @@ $(function(){
 
             // and add first cloud
             addCloud();
+            
+            setInterval(function(){
+                 var rand = Math.random()*100;
+                 if(rand  <= 40){
+                       addCloud();
+                       addStars(); 
+                 } else if(rand  <= 60) {
+                     addBadoblako();
+                     addStars();
+                 }else 
+                    addStars();
+            },500);
         }
     });
 
@@ -617,6 +822,27 @@ $(function(){
                 button4.imageShift = 112;
             }
         }  
+        if(pausebutton.visible)
+        {        
+            if (mouseX > pausebutton.x && mouseX < pausebutton.x+pausebutton.w && mouseY > pausebutton.y && mouseY < pausebutton.y+pausebutton.h) {
+                pausebutton.state = 'pressed';
+                pausebutton.imageShift = 0;
+            }
+        }
+        if(button5.visible)
+        {        
+            if (mouseX > button5.x && mouseX < button5.x+button5.w && mouseY > button5.y && mouseY < button5.y+button5.h) {
+                button5.state = 'pressed';
+                button5.imageShift = 112;
+            }
+        }  
+        if(button6.visible)
+        {        
+            if (mouseX > button6.x && mouseX < button6.x+button6.w && mouseY > button6.y && mouseY < button6.y+button6.h) {
+                button6.state = 'pressed';
+                button6.imageShift = 112;
+            }
+        } 
     });
 
     $('#scene').mousemove(function(e) { // привязываем событие движения мыши
@@ -679,24 +905,50 @@ $(function(){
                 }
             }
         }
+        if(pausebutton.visible)
+        {
+            if (pausebutton.state != 'pressed') {
+                pausebutton.state = 'normal';
+                pausebutton.imageShift = 0;
+                if (mouseX > pausebutton.x && mouseX < pausebutton.x+pausebutton.w && mouseY > pausebutton.y && mouseY < pausebutton.y+pausebutton.h) {
+                    pausebutton.state = 'hover';
+                    pausebutton.imageShift = 0;
+                }
+            }
+        }
+        if(button5.visible)
+        {
+            if (button5.state != 'pressed') {
+                button5.state = 'normal';
+                button5.imageShift = 0;
+                if (mouseX > button5.x && mouseX < button5.x+button5.w && mouseY > button5.y && mouseY < button5.y+button5.h) {
+                    button5.state = 'hover';
+                    button5.imageShift = 54;
+                }
+            }
+        }
+        if(button6.visible)
+        {
+            if (button6.state != 'pressed') {
+                button6.state = 'normal';
+                button6.imageShift = 0;
+                if (mouseX > button6.x && mouseX < button6.x+button6.w && mouseY > button6.y && mouseY < button6.y+button6.h) {
+                    button6.state = 'hover';
+                    button6.imageShift = 54;
+                }
+            }
+        }
     });
 
     $('#scene').mouseup(function(e) { // привязываем событие отжатия кнопки
 
-       /* if (bplane)
-            {
-                ctx.lineWidth = 5;
-                ctx.strokeStyle = 'rgba(255, 255, 204, 0.4)';
-                //ctx.stroke(); // отрисовка границы
-                ctx.strokeRect(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 200, 200, 200);
-                bplane = false;
-            }*/
         // поведение кнопок
         if(button.visible)
         {
             if (button.state === 'pressed') {
                 iDialogPage = 0;
-                bDrawDialog = !bDrawDialog;
+                bDrawDialog = false;
+                bPause = false;
                 button.visible=false;
                 button1.visible=false;
                 button2.visible=false;
@@ -711,7 +963,6 @@ $(function(){
         {
             if (button1.state === 'pressed') {
                 iDialogPage = 2;
-            //    bDrawDialog = !bDrawDialog;
                 button.visible=false;
                 button1.visible=false;
                 button2.visible=true;
@@ -722,16 +973,11 @@ $(function(){
         }
         button1.state = 'normal';
         button1.imageShift = 0;
+        //кнопка возврат в Меню из диалога Выбора самолета
         if(button2.visible)
         {
             if (button2.state === 'pressed') {
-                //clear();
-                iDialogPage = 1;
-                drawDialog();
-                drawButton();
-            //    bDrawDialog = !bDrawDialog;
-               // button.visible=false;
-              //  button1.visible=false;
+              iDialogPage = 1;
               button.visible=true;
               button1.visible=true;
               button2.visible=false;
@@ -745,11 +991,11 @@ $(function(){
         if(button3.visible)
         {
             if (button3.state === 'pressed') {
-                 bplane = false;
-                if (iplane > 1 && iplane <= 2)
-                    {
-                       iplane = iplane - 1;
-                    }
+              bplane = false;
+              if (iplane > 1 && iplane <= 2)
+              {
+                  iplane = iplane - 1;
+              }
               button.visible=false;
               button1.visible=false;
               button2.visible=true;
@@ -763,11 +1009,11 @@ $(function(){
         if(button4.visible)
         {
             if (button4.state === 'pressed') {
-                bplane = false;
-                if (iplane >= 1 && iplane < 2)
-                    {
-                       iplane = iplane + 1;
-                    }
+              bplane = false;
+              if (iplane >= 1 && iplane < 2)
+              {
+                  iplane = iplane + 1;
+              }
               button.visible=false;
               button1.visible=false;
               button2.visible=true;
@@ -778,6 +1024,71 @@ $(function(){
         }
         button4.state = 'normal';
         button4.imageShift = 0;
+        if(pausebutton.visible)
+        {
+            if (pausebutton.state === 'pressed') {
+              if (pauseclick == 0)
+              {
+                drawGradient();
+                bPause = true;
+                pauseclick = 1;
+                button5.visible=true;
+                button6.visible=true;
+              }
+              else if (pauseclick == 1)
+              {
+                bPause = false;
+                pauseclick = 0;
+                button5.visible=false;
+                button6.visible=false
+              }
+            }
+        }
+        pausebutton.state = 'normal';
+        pausebutton.imageShift = 0;
+        //кнопка Сохранить и выйти
+        if(button5.visible)
+        {
+            if (button5.state === 'pressed') {
+              clear();
+              bDrawDialog = true;
+              drawDialog();
+              iDialogPage = 1;
+              button.visible=true;
+              button1.visible=true;
+              button2.visible=false;
+              button3.visible=false;
+              button4.visible=false;
+              button5.visible=false;
+              button6.visible=false;
+            }
+
+        }
+        button5.state = 'normal';
+        button5.imageShift = 0;
+        //кнопка Выйти без сохранения
+        if(button6.visible)
+        {
+            if (button6.state === 'pressed') {
+              clear();
+              bDrawDialog = true;
+              drawDialog();
+              iDialogPage = 1;
+              iBgShiftY -= 2;
+              iScore = 0;
+              iLife = 100;
+              button.visible=true;
+              button1.visible=true;
+              button2.visible=false;
+              button3.visible=false;
+              button4.visible=false;
+              button5.visible=false;
+              button6.visible=false;
+            }
+
+        }
+        button6.state = 'normal';
+        button6.imageShift = 0;
     });
     
    // setInterval(drawScene, 30); // повторение кадров
