@@ -477,14 +477,14 @@ function drawScene() { // основная функция отрисовки с�
                     if( 20 >= rand <= 50)
                     badoblako[okey].sprite++;          
                     badoblako[okey].y -= badoblako[okey].speed;
-
+                    
+                    if (badoblako[okey].sprite > 5) {
+                    badoblako[okey].sprite = 0;
                     // remove an enemy object if it is out of screen
                     if (badoblako[okey].y > canvas.height) {
                         delete badoblako[okey];
                     }
                     //console.log(badoblako[okey].sprite)
-                    if (badoblako[okey].sprite > 5) {
-                        badoblako[okey].sprite = 0;
                     }
                 }
             }
@@ -499,13 +499,13 @@ function drawScene() { // основная функция отрисовки с�
                     stars[skey].sprite++;          
                     stars[skey].y -= stars[skey].speed;
 
+                    if (stars[skey].sprite > 10) {
+                    stars[skey].sprite = 0;
                     // remove an enemy object if it is out of screen
                     if (stars[skey].y > canvas.height) {
                         delete stars[skey];
                     }
                     //console.log(stars[skey].x)
-                    if (stars[skey].sprite > 10) {
-                        stars[skey].sprite = 0;
                     }
                 }
             }
