@@ -14,23 +14,28 @@ var button6;
 var bDrawDialog = true;
 var iDialogPage = 1;
 var pauseclick = 0;
-//var oRocketImage;
 var oExplosionImage;
-//var introImage;
 var oCloudImage;
+var oBadoblakoImage;
+var oStarsImage;
 
 var iBgShiftY = 9300; //10000 (level length) - 700 (canvas height)
 var bPause = false; // game pause
 var plane = null; // plane object
-//var rockets = []; // array of rockets
 var clouds = []; // array of clouds
 var explosions = []; // array of explosions
+var badoblako = [];
+var stars = [];
 var planeW = 120; // plane width
 var planeH = 160; // plane height
 var iSprPos = 1; // initial sprite frame for plane
 var iMoveDir = 1; // move direction
 var iCloudW = 131; // cloud width
 var iCloudH = 68; // cloud height
+var iBadoblakoW = 174;
+var iBadoblakoH = 100;
+var istarW = 20;
+var istarH = 20;
 var iRocketSpeed = 10; // initial rocket speed
 var iCloudSpeed = 3; // initial cloud speed
 var iCloudSpeedMin = 3; // минимальная скорость облака
@@ -43,18 +48,6 @@ var enTimer = null; // random timer for a new cloud
 var bplane = false; //выбор самолета
 var iplane = 1; //по умолчанию - 1 самолет
 // -------------------------------------------------------------
-// -------------------------------------------------------------
-// игровые объекты
-/*var cloud = null; 
-var plane=null;
-var cloud = []; //облака
-
-var iCloudW = 32; // ширина облака
-var iCloudH = 194; // высота облака
-var planeW = 211; // plane width
-var planeH = 40; // plane height
-var iCloudSpeedMin = 2; // минимальная скорость облака
-var iCloudSpeedMax = 5; //максимальная скорость облака*/
 
 // объекты:
 function Button(x, y, w, h, state, image) {
@@ -76,14 +69,7 @@ function Plane(x, y, w, h, image) {
     this.image = image;
     this.bDrag = false;
 }
-/*function Rocket(x, y, w, h, speed, image) {
-    this.x = x;
-    this.y = y;
-    this.w = w;
-    this.h = h;
-    this.speed = speed;
-    this.image = image;
-}*/
+
 function Cloud(x, y, w, h, speed, image) {
     this.x = x;
     this.y = y;
@@ -100,26 +86,24 @@ function Explosion(x, y, w, h, sprite, image) {
     this.sprite = sprite;
     this.image = image;
 }
-
-/*function Cloud(x, y, w, h, speed, image) {
+function Badoblako(x, y, w, h, sprite, image, speed) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.sprite = sprite;
+    this.image = image;
     this.speed = speed;
-    this.image = image;
 }
-
-function Plane(x, y, w, h, image) {
+function Stars(x, y, w, h, sprite, image, speed){
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.sprite = sprite;
     this.image = image;
-    //this.bDrag = false;
-    this.fuel = 666;
-    this.fuelMax=1000;
-}*/
+    this.speed = speed;
+}
 
 // -------------------------------------------------------------
 // получить случайное число между X и Y
@@ -134,6 +118,18 @@ function displayIntro() {
 
             // and add first cloud
             addCloud();
+            
+                setInterval(function(){
+                 var rand = Math.random()*100;
+                 if(rand  <= 30 && !bDrawDialog && !bPause){
+                     //  addCloud();
+                       addStars(); 
+                 } else if(rand  <= 10 && !bDrawDialog && !bPause) {
+                     addBadoblako();
+                     addStars();
+                 }else if(!bDrawDialog && !bPause)
+                    addStars();
+            },500);
 }
     // Add Cloud function (adds a new cloud randomly)
     function addCloud() {
@@ -149,6 +145,46 @@ function displayIntro() {
    // var interval = getRand(5000, 10000);
     enTimer = setInterval(addCloud, interval); // повторение кадров
     }
+    
+    function addBadoblako() {
+   // clearInterval(enTimer);
+
+    var randX = getRand(0, canvas.height - iBadoblakoH);
+    badoblako.push(new Badoblako(randX, 0, iBadoblakoW, iBadoblakoH, 0 , oBadoblakoImage, -iCloudSpeed));
+
+    //var interval = getRand(1000, 2000);
+    //enTimer = setInterval(addBadoblako, interval); // loop
+}
+
+function addStars() {
+            //for (var ekey in enemies){    
+            var rand1 = Math.random()*100; 
+                if (rand1 <=40){ 
+                    for (var okey in badoblako) {
+                        if (badoblako[okey] != undefined) {
+                             //var rand2 = Math.random()*100;
+//                             console.log( badoblako[okey].x);
+                                if(badoblako[okey].x < 400){
+                                    var randX = getRand((badoblako[okey].x + badoblako[okey].w), 550);
+                                }else 
+                                    var randX = getRand(0, badoblako[okey].x);     
+                        }
+                    }
+                } else if(rand1 <=60){
+                    for (var ekey in clouds){
+                        if (clouds[ekey] != undefined){
+                            if(clouds[ekey].x < 400){
+                                var randX = getRand((clouds[ekey].x + clouds[ekey].w), 550);
+                            }else 
+                                var randX = getRand(0, clouds[ekey].x);
+                        }
+                    }  
+                } else 
+                    var randX = getRand(0, canvas.height); 
+//    console.log(randX); 
+
+    stars.push(new Stars(randX, 0, istarW, istarH, 0 , oStarsImage, -iCloudSpeed));
+}
     
     //отрисовка полупрозрачного градиента
     function drawGradient()
@@ -169,7 +205,6 @@ function displayIntro() {
     }
     
 // фукнции отрисовки :
-
 function clear() { // функция очистки canvas
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
@@ -192,7 +227,6 @@ function drawDialog() { // функция отрисовки диалога
         ctx.lineTo(0, 0);
         ctx.closePath(); // конец фигуры
 		ctx.fill(); // заполнение фигуры*/
-
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'rgba(224, 224, 224, 0.4)';
         ctx.stroke(); // отрисовка границы
@@ -433,6 +467,49 @@ function drawScene() { // основная функция отрисовки с�
                 }
             }
         }
+        
+        // draw badoblako
+        if (badoblako.length > 0) {
+            for (var okey in badoblako) {
+                if (badoblako[okey] != undefined) {
+                    ctx.drawImage(badoblako[okey].image, badoblako[okey].sprite*badoblako[okey].w, 0, badoblako[okey].w, badoblako[okey].h, badoblako[okey].x - badoblako[okey].w/2, badoblako[okey].y - badoblako[okey].h/2, badoblako[okey].w, badoblako[okey].h);
+                    var rand = Math.random()*100;
+                    if( 20 >= rand <= 50)
+                    badoblako[okey].sprite++;          
+                    badoblako[okey].y -= badoblako[okey].speed;
+
+                    // remove an enemy object if it is out of screen
+                    if (badoblako[okey].y > canvas.height) {
+                        delete badoblako[okey];
+                    }
+                    //console.log(badoblako[okey].sprite)
+                    if (badoblako[okey].sprite > 5) {
+                        badoblako[okey].sprite = 0;
+                    }
+                }
+            }
+        }
+        //draw stars
+         if (stars.length > 0) {
+            for (var skey in stars) {
+                if (stars[skey] != undefined) {
+                    ctx.drawImage(stars[skey].image, stars[skey].sprite*stars[skey].w, 0, stars[skey].w, stars[skey].h, stars[skey].x - stars[skey].w/2, stars[skey].y - stars[skey].h/2, stars[skey].w, stars[skey].h);
+                    //var rand = Math.random()*100;
+                    //if( 20 >= rand <= 50)
+                    stars[skey].sprite++;          
+                    stars[skey].y -= stars[skey].speed;
+
+                    // remove an enemy object if it is out of screen
+                    if (stars[skey].y > canvas.height) {
+                        delete stars[skey];
+                    }
+                    //console.log(stars[skey].x)
+                    if (stars[skey].sprite > 10) {
+                        stars[skey].sprite = 0;
+                    }
+                }
+            }
+        }
 
         // draw clouds
         if (clouds.length > 0) {
@@ -489,6 +566,38 @@ function drawScene() { // основная функция отрисовки с�
                             }
                         }
                     }
+                    
+                    //collision with badoblako
+                    if (badoblako[okey] != undefined) {
+                        if (plane.y - plane.h/2 < badoblako[okey].y + badoblako[okey].h/2 && plane.x - plane.w/2 < badoblako[okey].x + badoblako[okey].w && plane.x + plane.w/2 > badoblako[okey].x) {
+                            explosions.push(new Explosion(badoblako[okey].x + badoblako[okey].w / 2, badoblako[okey].y + badoblako[okey].h / 2, 120, 120, 0, oExplosionImage));
+
+                            // delete enemy and make damage
+                            delete badoblako[okey];
+                            iLife -= iDamage;
+
+                            if (iLife <= 0) { // Game over
+                                bPause = true;
+
+                                // draw score
+                                ctx.font = '38px Verdana';
+                                ctx.fillStyle = '#fff';
+                                ctx.fillText('Game over, your score: ' + iScore * 10 + ' points:'+ plane.y, 25, 200);
+                                return;
+                            }
+                        }
+                    }
+                    //collision with stars
+                    if (stars[skey] != undefined) {
+                        if (plane.y - plane.h/2 < stars[skey].y + stars[skey].h/2 && plane.x - plane.w/2 < stars[skey].x + stars[skey].w && plane.x + plane.w/2 > stars[skey].x) {
+                            //explosions.push(new Explosion(badoblako[okey].x + badoblako[okey].w / 2, badoblako[okey].y + badoblako[okey].h / 2, 120, 120, 0, oExplosionImage));
+                            console.log(plane.y);
+                            // delete enemy and make damage
+                            delete stars[skey];
+                            iScore++;
+
+                            }
+                        }
                 }
             }
         }
@@ -564,6 +673,16 @@ $(function(){
     oCloudImage = new Image();
     oCloudImage.src = 'images/oblako_1.png';
     oCloudImage.onload = function() { }
+    
+    // initialization of badoblako
+    oBadoblakoImage = new Image();
+    oBadoblakoImage.src = 'images/badoblako.png';
+    oBadoblakoImage.onload = function() { }
+
+    //initialization of stars
+    oStarsImage = new Image();
+    oStarsImage.src = 'images/zvezda.png';
+    oStarsImage.onload = function() { }
 
     // initialization of plane
     var oPlaneImage = new Image();
@@ -616,6 +735,18 @@ $(function(){
 
             // and add first cloud
             addCloud();
+            
+            setInterval(function(){
+                 var rand = Math.random()*100;
+                 if(rand  <= 40){
+                       addCloud();
+                       addStars(); 
+                 } else if(rand  <= 60) {
+                     addBadoblako();
+                     addStars();
+                 }else 
+                    addStars();
+            },500);
         }
     });
 
