@@ -24,18 +24,18 @@ var bPause = false; // game pause
 var plane = null; // plane object
 var clouds = []; // array of clouds
 var explosions = []; // array of explosions
-var badoblako = [];
-var stars = [];
+var badoblako = []; // array of badoblako
+var stars = []; // array of stars
 var planeW = 120; // plane width
 var planeH = 160; // plane height
 var iSprPos = 1; // initial sprite frame for plane
 var iMoveDir = 1; // move direction
 var iCloudW = 131; // cloud width
 var iCloudH = 68; // cloud height
-var iBadoblakoW = 174;
-var iBadoblakoH = 100;
-var istarW = 20;
-var istarH = 20;
+var iBadoblakoW = 174; // badoblako width
+var iBadoblakoH = 100; // badoblako height
+var istarW = 20; // star width
+var istarH = 20; // star height
 var iRocketSpeed = 10; // initial rocket speed
 var iCloudSpeed = 3; // initial cloud speed
 var iCloudSpeedMin = 3; // минимальная скорость облака
@@ -121,10 +121,10 @@ function displayIntro() {
             
                 setInterval(function(){
                  var rand = Math.random()*100;
-                 if(rand  <= 30 && !bDrawDialog && !bPause){
+                 if(rand  <= 40 && !bDrawDialog && !bPause){
                      //  addCloud();
                        addStars(); 
-                 } else if(rand  <= 10 && !bDrawDialog && !bPause) {
+                 } else if(rand  <= 35 && !bDrawDialog && !bPause) {
                      addBadoblako();
                      addStars();
                  }else if(!bDrawDialog && !bPause)
@@ -477,15 +477,15 @@ function drawScene() { // основная функция отрисовки с�
                     if( 20 >= rand <= 50)
                     badoblako[okey].sprite++;          
                     badoblako[okey].y -= badoblako[okey].speed;
-                    
+
                     if (badoblako[okey].sprite > 5) {
                     badoblako[okey].sprite = 0;
+                    }
                     // remove an enemy object if it is out of screen
                     if (badoblako[okey].y > canvas.height) {
                         delete badoblako[okey];
                     }
                     //console.log(badoblako[okey].sprite)
-                    }
                 }
             }
         }
@@ -500,13 +500,13 @@ function drawScene() { // основная функция отрисовки с�
                     stars[skey].y -= stars[skey].speed;
 
                     if (stars[skey].sprite > 10) {
-                    stars[skey].sprite = 0;
+                        stars[skey].sprite = 0;
+                    }
                     // remove an enemy object if it is out of screen
                     if (stars[skey].y > canvas.height) {
                         delete stars[skey];
                     }
                     //console.log(stars[skey].x)
-                    }
                 }
             }
         }
@@ -946,6 +946,20 @@ $(function(){
         if(button.visible)
         {
             if (button.state === 'pressed') {
+                // and add first cloud
+               addCloud();
+            
+                setInterval(function(){
+                 var rand = Math.random()*100;
+                 if(rand  <= 40 && !bDrawDialog && !bPause){
+                     //  addCloud();
+                       addStars(); 
+                 } else if(rand  <= 35 && !bDrawDialog && !bPause) {
+                     addBadoblako();
+                     addStars();
+                 }else if(!bDrawDialog && !bPause)
+                    addStars();
+                },500);
                 iDialogPage = 0;
                 bDrawDialog = false;
                 bPause = false;
@@ -1070,13 +1084,26 @@ $(function(){
         if(button6.visible)
         {
             if (button6.state === 'pressed') {
-              clear();
+              // clear canvas
+              ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
               bDrawDialog = true;
               drawDialog();
               iDialogPage = 1;
-              iBgShiftY -= 2;
+              iBgShiftY = 9300;
               iScore = 0;
               iLife = 100;
+              for (var ekey in clouds) {
+               if (clouds[ekey] !== undefined)
+                 delete clouds[ekey];
+              }
+              for (var okey in badoblako) {
+               if (badoblako[okey] !== undefined)
+               delete badoblako[okey];
+              }
+              for (var skey in stars) {
+               if (stars[skey] !== undefined) 
+                delete stars[skey];
+              }
               button.visible=true;
               button1.visible=true;
               button2.visible=false;
