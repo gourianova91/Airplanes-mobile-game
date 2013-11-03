@@ -11,6 +11,7 @@ var button4;
 var pausebutton;
 var button5;
 var button6;
+var helpbutton;
 var bDrawDialog = true;
 var iDialogPage = 1;
 var pauseclick = 0;
@@ -124,7 +125,7 @@ function displayIntro() {
                  if(rand  <= 40 && !bDrawDialog && !bPause){
                      //  addCloud();
                        addStars(); 
-                 } else if(rand  <= 35 && !bDrawDialog && !bPause) {
+                 } else if(rand  <= 45 && !bDrawDialog && !bPause) {
                      addBadoblako();
                      addStars();
                  }else if(!bDrawDialog && !bPause)
@@ -214,19 +215,6 @@ function drawDialog() { // функция отрисовки диалога
         // draw background
         ctx.drawImage(backgroundImage, 0, 0 + iBgShiftY, 700, 700, 0, 0, 700, 700);
         drawGradient();
-      /*  var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
-        bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.8)');
-        bg_gradient.addColorStop(1.0, 'rgba(224, 224, 224, 0.8)');
-
-        ctx.beginPath(); // начало фигуры
-        ctx.fillStyle = bg_gradient;
-        ctx.moveTo(0, 0);
-        ctx.lineTo(ctx.canvas.width - 2, 0);
-        ctx.lineTo(ctx.canvas.width - 2, ctx.canvas.height - 2);
-        ctx.lineTo(0, ctx.canvas.height - 2);
-        ctx.lineTo(0, 0);
-        ctx.closePath(); // конец фигуры
-		ctx.fill(); // заполнение фигуры*/
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'rgba(224, 224, 224, 0.4)';
         ctx.stroke(); // отрисовка границы
@@ -242,9 +230,6 @@ function drawDialog() { // функция отрисовки диалога
         ctx.fillStyle = '#F4F3FC';
         if (iDialogPage === 1) {
             ctx.fillText('Airplanes mobile game', ctx.canvas.width/2, ctx.canvas.height/2 - 230);
-           // ctx.font = '24px Calibri';
-           // ctx.fillText('После закрытия диалогового окна Вы сможете', ctx.canvas.width/2, 190);
-           // ctx.fillText('управлять самолетом', ctx.canvas.width/2, 220);
             button2.visible=false;
             button3.visible=false;
             button4.visible=false;
@@ -259,6 +244,7 @@ function drawDialog() { // функция отрисовки диалога
             pausebutton.visible=false;
             button5.visible=false;
             button6.visible=false;
+            helpbutton.visible=false;
             if (!bplane)
             {
                ctx.lineWidth = 2;
@@ -282,6 +268,30 @@ function drawDialog() { // функция отрисовки диалога
               ctx.fillText('Самолет №2', ctx.canvas.width/2, ctx.canvas.height/2 - 120);
            }
         }
+        else if (iDialogPage === 3) {
+            ctx.fillText('Справка', ctx.canvas.width/2, ctx.canvas.height/2 - 300);
+            button2.visible=true; 
+            button3.visible=false;
+            button4.visible=false;
+            pausebutton.visible=false;
+            button5.visible=false;
+            button6.visible=false;
+            helpbutton.visible=false;
+            ctx.font = '24px Calibri';
+            ctx.fillText('Управляйте самолетом ', ctx.canvas.width/2 - 150, 190);
+            ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2 + 30, plane.y - plane.h/2 - 360, plane.w/2, plane.h/2);
+            ctx.fillText(', передвигая его влево и', ctx.canvas.width/2 + 165, 190);
+            ctx.fillText('вправо. Избегайте попадания в облака', ctx.canvas.width/2 - 80, 250);
+            ctx.drawImage(oCloudImage, ctx.canvas.width/2 + 130, ctx.canvas.height/2 - 105, iCloudW/2, iCloudH/2);
+            ctx.fillText('и зоны', ctx.canvas.width/2 + 240, 250);
+            ctx.fillText('турбулентности ', ctx.canvas.width/2 - 195, 300);
+            ctx.drawImage(oBadoblakoImage, 0, 0, iBadoblakoW, iBadoblakoH, ctx.canvas.width/2 - 110, ctx.canvas.height/2 - 65, iBadoblakoW/2, iBadoblakoH/2);
+            ctx.fillText('. Собирайте звездочки ', ctx.canvas.width/2 + 100, 300);
+            ctx.drawImage(oStarsImage, 0, 0, istarW*2, istarH*2, ctx.canvas.width/2 + 210, ctx.canvas.height/2 - 50, istarW*2, istarH*2);
+            ctx.fillText('для ', ctx.canvas.width/2 + 285, 300);
+            ctx.fillText('открытия новых моделей самолетов и баки с топливом', ctx.canvas.width/2 + 5, 350);
+            ctx.fillText('для пополнения топлива самолета.', ctx.canvas.width/2 - 100, 400);
+          }
     }
     else if (!bDrawDialog)
     {
@@ -365,44 +375,25 @@ function drawButton() { // функция отрисовки кнопки
 		ctx.fillStyle = '#F4F3FC';
 		ctx.fillText('Выйти без сохранения', ctx.canvas.width/2 - 2, ctx.canvas.height/2 - 23);
 	}
+        if(helpbutton.visible==true)
+	{
+		// отрисовка кнопки
+		ctx.drawImage(helpbutton.image, 0, helpbutton.imageShift, helpbutton.w, helpbutton.h, helpbutton.x, helpbutton.y, helpbutton.w, helpbutton.h);
+
+		// отрисовка текста на кнопке
+		ctx.font = '19px Condensed';
+		ctx.fillStyle = '#F4F3FC';
+		ctx.fillText('Справка', ctx.canvas.width/2 - 3, ctx.canvas.height/2 + 39);
+	}
 }
 
 // функции рисования:
-function drawScene() { // основная функция отрисовки сцены
-   // clear(); // очистить canvas
-    //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); //очистить холст
-
-   /*/ нарисовать фон
-    iBgShiftX += 4;
-    if (iBgShiftX >= 1024) {
-        iBgShiftX = 0;
-    }
-    ctx.drawImage(backgroundImage1, 0 + iBgShiftX, 0, 1000, 940, 0, 0, 1000, 600);*/
-
-    
-    
+function drawScene() { // основная функция отрисовки сцены  
     // отрисовка диалога
     drawDialog();
     drawButton();
     if(!bDrawDialog)
     {
-        /*/ рисуем самолет
-        ctx.drawImage(plane.image, plane.x,plane.y);
-        
-        // рисуем облака
-        if (cloud.length > 0) {
-            for (var ekey in cloud) {
-                if (cloud[ekey] !== undefined) {
-                    ctx.drawImage(cloud[ekey].image, cloud[ekey].x, cloud[ekey].y);
-                    cloud[ekey].x += cloud[ekey].speed;
-
-                      if (cloud[ekey].x < cloud[ekey].x - iCloudW) {
-                   // if (cloud[ekey].x < - iCloudW) {
-                        delete cloud[ekey];
-                    }
-                }
-            }
-        }*/
         if (! bPause) {
         iBgShiftY -= 2; // move main ground
         if (iBgShiftY < 5) { // Finish position
@@ -436,21 +427,6 @@ function drawScene() { // основная функция отрисовки с�
         
         // draw pause
         ctx.drawImage(pausebutton.image, 0, pausebutton.imageShift, pausebutton.w, pausebutton.h, pausebutton.x, pausebutton.y, pausebutton.w, pausebutton.h);
-        
-        /*/ draw rockets
-        if (rockets.length > 0) {
-            for (var key in rockets) {
-                if (rockets[key] != undefined) {
-                    ctx.drawImage(rockets[key].image, rockets[key].x, rockets[key].y);
-                    rockets[key].y -= rockets[key].speed;
-
-                    // if a rocket is out of screen - remove it
-                    if (rockets[key].y < 0) {
-                        delete rockets[key];
-                    }
-                }
-            }
-        }*/
 
         // draw explosions
         if (explosions.length > 0) {
@@ -529,22 +505,6 @@ function drawScene() { // основная функция отрисовки с�
         if (clouds.length > 0) {
             for (var ekey in clouds) {
                 if (clouds[ekey] != undefined) {
-
-                  /*  // collisions with rockets
-                    if (rockets.length > 0) {
-                        for (var key in rockets) {
-                            if (rockets[key] != undefined) {
-                                if (rockets[key].y < clouds[ekey].y + clouds[ekey].h/2 && rockets[key].x > clouds[ekey].x && rockets[key].x + rockets[key].w < clouds[ekey].x + clouds[ekey].w) {
-                                    explosions.push(new Explosion(clouds[ekey].x + clouds[ekey].w / 2, clouds[ekey].y + clouds[ekey].h / 2, 120, 120, 0, oExplosionImage));
-
-                                    // delete cloud, rocket, and add +1 to score
-                                    delete clouds[ekey];
-                                    delete rockets[key];
-                                    iScore++;
-                                }
-                            }
-                        }
-                    }*/
 
                     // collisions with plane
                     if (clouds[ekey] != undefined) {
@@ -638,16 +598,7 @@ function processPressedKeys() {
 $(function(){
     canvas = document.getElementById('scene');
     ctx = canvas.getContext('2d');
-
-    /*/ загрузка фона
-    backgroundImage1 = new Image();
-    backgroundImage1.src = 'images/1.jpg';
-    backgroundImage1.onload = function() {
-    }
-    backgroundImage1.onerror = function() {
-        console.log('Error');
-    }*/
-    // load background image
+    
     backgroundImage = new Image();
     backgroundImage.src = 'images/levelmap.jpg';
     backgroundImage.onload = function() {
@@ -655,14 +606,6 @@ $(function(){
     backgroundImage.onerror = function() {
         console.log('Error loading the background image.');
     }
-
-   /* introImage = new Image();
-    introImage.src = 'images/intro.jpg';*/
-
-    /*/ initialization of empty rocket
-    oRocketImage = new Image();
-    oRocketImage.src = 'images/rocket.png';
-    oRocketImage.onload = function() { }*/
 
     // initialization of explosion image
     oExplosionImage = new Image();
@@ -708,18 +651,7 @@ $(function(){
     pausebutton = new Button(ctx.canvas.width/2 - 345, ctx.canvas.height/2 - 345, 38, 38, 'normal', pauseImage); //кнопка паузы
     button5 = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 100, 202, 52, 'normal', buttonImage); //кнопка Сохранить и выйти
     button6 = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 35, 202, 52, 'normal', buttonImage); //кнопка Выйти без сохранения
-    
-   /* // инициализация пустого облака
-    var oCloudImage = new Image();
-    oCloudImage.src = 'images/cloud1.gif';
-    oCloudImage.onload = function() { }
-    
-    // инициализация самолета
-    var oPlaneImage = new Image();
-    oPlaneImage.src = 'images/plane.gif';
-    oPlaneImage.onload = function() {
-        plane = new Plane(5+planeW, canvas.height/2, planeW, planeH, oPlaneImage);
-    }*/
+    helpbutton = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 + 25, 202, 52, 'normal', buttonImage); //кнопка Справка
     
     $(window).keydown(function (evt){ // onkeydown event handle
         var pk = pressedKeys[evt.keyCode];
@@ -842,7 +774,14 @@ $(function(){
                 button6.state = 'pressed';
                 button6.imageShift = 112;
             }
-        } 
+        }
+        if(helpbutton.visible)
+        {        
+            if (mouseX > helpbutton.x && mouseX < helpbutton.x+helpbutton.w && mouseY > helpbutton.y && mouseY < helpbutton.y+helpbutton.h) {
+                helpbutton.state = 'pressed';
+                helpbutton.imageShift = 112;
+            }
+        }
     });
 
     $('#scene').mousemove(function(e) { // привязываем событие движения мыши
@@ -938,11 +877,23 @@ $(function(){
                 }
             }
         }
+        if(helpbutton.visible)
+        {
+            if (helpbutton.state != 'pressed') {
+                helpbutton.state = 'normal';
+                helpbutton.imageShift = 0;
+                if (mouseX > helpbutton.x && mouseX < helpbutton.x+helpbutton.w && mouseY > helpbutton.y && mouseY < helpbutton.y+helpbutton.h) {
+                    helpbutton.state = 'hover';
+                    helpbutton.imageShift = 54;
+                }
+            }
+        }
     });
 
     $('#scene').mouseup(function(e) { // привязываем событие отжатия кнопки
 
         // поведение кнопок
+        //кнопка Играть
         if(button.visible)
         {
             if (button.state === 'pressed') {
@@ -964,6 +915,7 @@ $(function(){
                 bDrawDialog = false;
                 bPause = false;
                 button.visible=false;
+                helpbutton.visible=false;
                 button1.visible=false;
                 button2.visible=false;
                 button3.visible=false;
@@ -973,17 +925,18 @@ $(function(){
         }
         button.state = 'normal';
         button.imageShift = 0;
+        //кнопка Выбор самолета
         if(button1.visible)
         {
             if (button1.state === 'pressed') {
                 iDialogPage = 2;
                 button.visible=false;
+                helpbutton.visible=false;
                 button1.visible=false;
                 button2.visible=true;
                 button3.visible=true;
                 button4.visible=true;
             }
-
         }
         button1.state = 'normal';
         button1.imageShift = 0;
@@ -993,6 +946,7 @@ $(function(){
             if (button2.state === 'pressed') {
               iDialogPage = 1;
               button.visible=true;
+              helpbutton.visible=true;
               button1.visible=true;
               button2.visible=false;
               button3.visible=false;
@@ -1002,6 +956,7 @@ $(function(){
         }
         button2.state = 'normal';
         button2.imageShift = 0;
+        //кнопка Предыдущий самолет
         if(button3.visible)
         {
             if (button3.state === 'pressed') {
@@ -1011,6 +966,7 @@ $(function(){
                   iplane = iplane - 1;
               }
               button.visible=false;
+              helpbutton.visible=false;
               button1.visible=false;
               button2.visible=true;
               button3.visible=true;
@@ -1020,6 +976,7 @@ $(function(){
         }
         button3.state = 'normal';
         button3.imageShift = 0;
+        //кнопка Следующий самолет
         if(button4.visible)
         {
             if (button4.state === 'pressed') {
@@ -1029,15 +986,16 @@ $(function(){
                   iplane = iplane + 1;
               }
               button.visible=false;
+              helpbutton.visible=false;
               button1.visible=false;
               button2.visible=true;
               button3.visible=true;
               button4.visible=true;
             }
-
         }
         button4.state = 'normal';
         button4.imageShift = 0;
+        //кнопка паузы
         if(pausebutton.visible)
         {
             if (pausebutton.state === 'pressed') {
@@ -1069,6 +1027,7 @@ $(function(){
               drawDialog();
               iDialogPage = 1;
               button.visible=true;
+              helpbutton.visible=true;
               button1.visible=true;
               button2.visible=false;
               button3.visible=false;
@@ -1105,6 +1064,7 @@ $(function(){
                 delete stars[skey];
               }
               button.visible=true;
+              helpbutton.visible=true;
               button1.visible=true;
               button2.visible=false;
               button3.visible=false;
@@ -1116,25 +1076,21 @@ $(function(){
         }
         button6.state = 'normal';
         button6.imageShift = 0;
-    });
-    
-   // setInterval(drawScene, 30); // повторение кадров
-    
-    // генерировать облака случайно
-    /*var enTimer = null;
-    function addCloud() {
-        clearInterval(enTimer);
-
-        var randY = getRand(0, canvas.height - iCloudH);
-        var chanse = getRand(0,100);
-        if(chanse <= 70&&!bDrawDialog)
+        //кнопка Справка
+        if(helpbutton.visible)
         {
-            cloud.push(new Cloud(canvas.width, randY, iCloudW, iCloudH, - getRand(iCloudSpeedMin, iCloudSpeedMax), oCloudImage)); //скорость теперь настравивается перменными
-      //  cloud.push(new Cloud(canvas.width, randY, iCloudW, iCloudH, - iCloudSpeed, oCloudImage));
+            if (helpbutton.state === 'pressed') {
+                iDialogPage = 3;
+                button.visible=false;
+                helpbutton.visible=false;
+                button1.visible=false;
+                button2.visible=true;
+                button3.visible=false;
+                button4.visible=false;
+            }
         }
-        var interval = getRand(5000, 10000);
-        enTimer = setInterval(addCloud, interval); // повторение кадров
-    }*/
-    //addCloud();
+        helpbutton.state = 'normal';
+        helpbutton.imageShift = 0;
+    });
         displayIntro(); // Display intro once
     });
