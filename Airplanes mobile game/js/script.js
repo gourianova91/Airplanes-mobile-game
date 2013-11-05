@@ -558,7 +558,7 @@ function drawScene() { // основная функция отрисовки с�
                                 // draw score
                                 ctx.font = '38px Verdana';
                                 ctx.fillStyle = '#fff';
-                                ctx.fillText('Вы проиграли, ваши очки: ' + iScore * 10 + ' points:'+ plane.y, 25, 200);
+                                ctx.fillText('Game over, your score: ' + iScore * 10 + ' points:'+ plane.y, 25, 200);
                                 return;
                             }
                         }
