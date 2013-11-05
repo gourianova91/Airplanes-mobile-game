@@ -425,7 +425,7 @@ function drawScene() { // основная функция отрисовки с�
         // draw plane
         if (iplane == 1)
         {
-           ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2, plane.y - plane.h/2, plane.w, plane.h);
+           ctx.drawImage(plane.image, iSprPos*plane.w + 15, 0, plane.w+10, plane.h, plane.x - plane.w/2, plane.y - plane.h/2, plane.w, plane.h);
         }
         if (iplane == 2)
         {
@@ -516,7 +516,7 @@ function drawScene() { // основная функция отрисовки с�
                     // collisions with plane
                     if (clouds[ekey] != undefined) {
                         if (plane.y - plane.h/2 < clouds[ekey].y + clouds[ekey].h/2 && plane.x - plane.w/2 < clouds[ekey].x + clouds[ekey].w && plane.x + plane.w/2 > clouds[ekey].x) {
-                            explosions.push(new Explosion(clouds[ekey].x + clouds[ekey].w / 2, clouds[ekey].y + clouds[ekey].h / 2, 120, 120, 0, oExplosionImage));
+                            //explosions.push(new Explosion(clouds[ekey].x + clouds[ekey].w / 2, clouds[ekey].y + clouds[ekey].h / 2, 120, 120, 0, oExplosionImage));
 
                             // delete cloud and make damage
                             delete clouds[ekey];
@@ -546,7 +546,7 @@ function drawScene() { // основная функция отрисовки с�
                         if (plane.y < badoblako[ekey].y + badoblako[ekey].h &&  plane.x > badoblako[ekey].x - badoblako[ekey].h/2 && plane.x < badoblako[ekey].x + badoblako[ekey].h/2 ) {
                             //console.log(badoblako[ekey].x);
                             
-                            explosions.push(new Explosion(badoblako[ekey].x + badoblako[ekey].w / 2, badoblako[ekey].y + badoblako[ekey].h / 2, 120, 120, 0, oExplosionImage));
+                            //explosions.push(new Explosion(badoblako[ekey].x + badoblako[ekey].w / 2, badoblako[ekey].y + badoblako[ekey].h / 2, 120, 120, 0, oExplosionImage));
 
                             // delete badoblako and make damage
                             delete badoblako[ekey];
