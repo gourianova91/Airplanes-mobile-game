@@ -24,7 +24,6 @@ var tmpImg = null;
 var iBgShiftY = 9300; //10000 (level length) - 700 (canvas height)
 var bPause = false; // game pause
 var plane = null; // plane1 object
-var plane2 = null; // plane2 object
 var clouds = []; // array of clouds
 var explosions = []; // array of explosions
 var badoblako = []; // array of badoblako
@@ -272,7 +271,7 @@ function drawDialog() { // функция отрисовки диалога
             {
                tmpImg.src='images/plan2.png';
                plane.image.src=tmpImg.src;
-               ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2 - 5, plane.y - plane.h/2 - 360, plane.w, plane.h);
+               ctx.drawImage(plane.image, iSprPos*plane.w + 15, 0, plane.w+10, plane.h, plane.x - plane.w/2 - 5, plane.y - plane.h/2 - 360, plane.w, plane.h);
                //console.log(iplane);
             }
         }
@@ -535,13 +534,22 @@ function drawScene() { // основная функция отрисовки с�
                         }
                     }
 
-                    //collision with badoblako
-                    if (badoblako[okey] != undefined) {
-                        if (plane.y - plane.h/2 < badoblako[okey].y + badoblako[okey].h/2 && plane.x - plane.w/2 < badoblako[okey].x + badoblako[okey].w && plane.x + plane.w/2 > badoblako[okey].x) {
-                            explosions.push(new Explosion(badoblako[okey].x + badoblako[okey].w / 2, badoblako[okey].y + badoblako[okey].h / 2, 120, 120, 0, oExplosionImage));
+        //collision with badoblako
+        if (badoblako.length > 0) {
+            for (var ekey in badoblako) {
+                if (badoblako[ekey] != undefined) {
 
-                            // delete enemy and make damage
-                            delete badoblako[okey];
+                    // collisions with plane
+                    if (badoblako[ekey] != undefined) {
+                        console.log(badoblako[ekey].x);
+                        console.log(plane.x);
+                        if (plane.y < badoblako[ekey].y + badoblako[ekey].h &&  plane.x > badoblako[ekey].x - badoblako[ekey].h/2 && plane.x < badoblako[ekey].x + badoblako[ekey].h/2 ) {
+                            //console.log(badoblako[ekey].x);
+                            
+                            explosions.push(new Explosion(badoblako[ekey].x + badoblako[ekey].w / 2, badoblako[ekey].y + badoblako[ekey].h / 2, 120, 120, 0, oExplosionImage));
+
+                            // delete badoblako and make damage
+                            delete badoblako[ekey];
                             iLife -= iDamage;
 
                             if (iLife <= 0) { // Game over
@@ -555,6 +563,9 @@ function drawScene() { // основная функция отрисовки с�
                             }
                         }
                     }
+                }
+            }
+        }
                     //collision with stars
                     if (stars[skey] != undefined) {
                         if (plane.y - plane.h/2 < stars[skey].y + stars[skey].h/2 && plane.x - plane.w/2 < stars[skey].x + stars[skey].w && plane.x + plane.w/2 > stars[skey].x) {
