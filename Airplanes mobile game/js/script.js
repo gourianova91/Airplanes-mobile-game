@@ -19,6 +19,7 @@ var oExplosionImage;
 var oCloudImage;
 var oBadoblakoImage;
 var oStarsImage;
+var tmpImg = null;
 
 var iBgShiftY = 9300; //10000 (level length) - 700 (canvas height)
 var bPause = false; // game pause
@@ -259,14 +260,19 @@ function drawDialog() { // функция отрисовки диалога
                ctx.strokeRect(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 200, 200, 200);
             }
              // draw plane
+            tmpImg= new Image();
             if (iplane == 1)
             {
+               tmpImg.src='images/plan.png';
+               plane.image.src=tmpImg.src;
                ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2 - 5, plane.y - plane.h/2 - 360, plane.w, plane.h);
               // console.log(iplane);
             }
             else if (iplane == 2)
             {
-               ctx.drawImage(plane2.image, iSprPos*plane2.w + 10, 0, plane2.w+5, plane2.h, plane2.x - plane2.w/2 - 5, plane2.y - plane2.h/2 - 360, plane2.w, plane2.h);
+               tmpImg.src='images/plan2.png';
+               plane.image.src=tmpImg.src;
+               ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2 - 5, plane.y - plane.h/2 - 360, plane.w, plane.h);
                //console.log(iplane);
             }
         }
@@ -424,7 +430,7 @@ function drawScene() { // основная функция отрисовки с�
         }
         if (iplane == 2)
         {
-           ctx.drawImage(plane2.image, iSprPos*plane2.w + 10, 0, plane2.w+5, plane2.h, plane2.x - plane2.w/2, plane2.y - plane2.h/2, plane2.w, plane2.h);
+           ctx.drawImage(plane.image, iSprPos*plane.w + 15, 0, plane.w + 10, plane.h, plane.x - plane.w/2, plane.y - plane.h/2, plane.w, plane.h);
         }
         
         // draw pause
@@ -508,12 +514,6 @@ function drawScene() { // основная функция отрисовки с�
             for (var ekey in clouds) {
                 if (clouds[ekey] != undefined) {
 
-                    if (iplane == 2)
-                    {
-                            plane = plane2;
-                    }
-                  //  else if (iplane == 1)
-                   // {
                     // collisions with plane
                     if (clouds[ekey] != undefined) {
                         if (plane.y - plane.h/2 < clouds[ekey].y + clouds[ekey].h/2 && plane.x - plane.w/2 < clouds[ekey].x + clouds[ekey].w && plane.x + plane.w/2 > clouds[ekey].x) {
@@ -534,12 +534,7 @@ function drawScene() { // основная функция отрисовки с�
                             }
                         }
                     }
-                //  }
-                    
-                    if (iplane == 2)
-                    {
-                       plane = plane2;
-                    }
+
                     //collision with badoblako
                     if (badoblako[okey] != undefined) {
                         if (plane.y - plane.h/2 < badoblako[okey].y + badoblako[okey].h/2 && plane.x - plane.w/2 < badoblako[okey].x + badoblako[okey].w && plane.x + plane.w/2 > badoblako[okey].x) {
@@ -559,10 +554,6 @@ function drawScene() { // основная функция отрисовки с�
                                 return;
                             }
                         }
-                    }
-                    if (iplane == 2)
-                    {
-                       plane = plane2;
                     }
                     //collision with stars
                     if (stars[skey] != undefined) {
@@ -596,10 +587,6 @@ function processPressedKeys() {
             iSprPos = 2;
             iMoveDir = -3;//скорость поворота самолета
         }
-         if (iplane == 2)
-         {
-            plane = plane2;
-         }
         if (plane.x - plane.w / 2 > 10) {
             plane.x += iMoveDir;
         }
@@ -658,7 +645,7 @@ $(function(){
     var oPlane2Image = new Image();
         oPlane2Image.src = 'images/plan2.png';
         oPlane2Image.onload = function() {
-        plane2 = new Plane(canvas.width / 2, canvas.height - 100, planeW, planeH, oPlane2Image);
+        plane = new Plane(canvas.width / 2, canvas.height - 100, planeW, planeH, oPlane2Image);
     }
 
     // загрузка кнопки меню
@@ -714,9 +701,6 @@ $(function(){
         if (pk) {
             delete pressedKeys[evt.keyCode]; // remove pressed key from array
         }
-        //if (evt.keyCode == 65) { // 'A' button - add a rocket
-            //rockets.push(new Rocket(plane.x - 16, plane.y - plane.h, 32, 32, iRocketSpeed, oRocketImage));
-       // }
         if (evt.keyCode == 37 || evt.keyCode == 39) {
             // revert plane sprite to default position
             if (iSprPos > 1) {
@@ -992,7 +976,6 @@ $(function(){
               {
                   iplane = iplane - 1;
               }
-              ctx.fillText(iplane, ctx.canvas.width/2, ctx.canvas.height/2 - 230);
               button.visible=false;
               helpbutton.visible=false;
               button1.visible=false;
@@ -1013,7 +996,6 @@ $(function(){
               {
                   iplane = iplane + 1;
               }
-              ctx.fillText(iplane, ctx.canvas.width/2, ctx.canvas.height/2 - 230);
               button.visible=false;
               helpbutton.visible=false;
               button1.visible=false;
