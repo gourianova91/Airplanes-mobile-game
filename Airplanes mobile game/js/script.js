@@ -267,8 +267,8 @@ function drawDialog() { // функция отрисовки диалога
             {
                tmpImg.src='images/plan2.png';
                plane.image.src=tmpImg.src;
-               plane.w=110;
-               plane.h=143;
+              // plane.w=110;
+               //plane.h=143;
                ctx.drawImage(plane.image, iSprPos*plane.w + 15, 0, plane.w+10, plane.h, plane.x - plane.w/2 - 5, plane.y - plane.h/2 - 360, plane.w, plane.h);
                //console.log(iplane);
             }
