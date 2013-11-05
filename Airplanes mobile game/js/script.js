@@ -22,7 +22,8 @@ var oStarsImage;
 
 var iBgShiftY = 9300; //10000 (level length) - 700 (canvas height)
 var bPause = false; // game pause
-var plane = null; // plane object
+var plane = null; // plane1 object
+var plane2 = null; // plane2 object
 var clouds = []; // array of clouds
 var explosions = []; // array of explosions
 var badoblako = []; // array of badoblako
@@ -48,7 +49,7 @@ var iDamage = 10; // damage per cloud plane
 var enTimer = null; // random timer for a new cloud
 var bplane = false; //выбор самолета
 var iplane = 1; //по умолчанию - 1 самолет
-// -------------------------------------------------------------
+// ------------------------------------------------------------
 
 // объекты:
 function Button(x, y, w, h, state, image) {
@@ -261,12 +262,13 @@ function drawDialog() { // функция отрисовки диалога
             if (iplane == 1)
             {
                ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2 - 5, plane.y - plane.h/2 - 360, plane.w, plane.h);
+              // console.log(iplane);
             }
             else if (iplane == 2)
-           {
-              ctx.font = '24px Calibri';
-              ctx.fillText('Самолет №2', ctx.canvas.width/2, ctx.canvas.height/2 - 120);
-           }
+            {
+               ctx.drawImage(plane2.image, iSprPos*plane2.w + 10, 0, plane2.w+5, plane2.h, plane2.x - plane2.w/2 - 5, plane2.y - plane2.h/2 - 360, plane2.w, plane2.h);
+               //console.log(iplane);
+            }
         }
         else if (iDialogPage === 3) {
             ctx.fillText('Справка', ctx.canvas.width/2, ctx.canvas.height/2 - 300);
@@ -422,7 +424,7 @@ function drawScene() { // основная функция отрисовки с�
         }
         if (iplane == 2)
         {
-           ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2, plane.y - plane.h/2, plane.w, plane.h);
+           ctx.drawImage(plane2.image, iSprPos*plane2.w + 10, 0, plane2.w+5, plane2.h, plane2.x - plane2.w/2, plane2.y - plane2.h/2, plane2.w, plane2.h);
         }
         
         // draw pause
@@ -506,6 +508,12 @@ function drawScene() { // основная функция отрисовки с�
             for (var ekey in clouds) {
                 if (clouds[ekey] != undefined) {
 
+                    if (iplane == 2)
+                    {
+                            plane = plane2;
+                    }
+                  //  else if (iplane == 1)
+                   // {
                     // collisions with plane
                     if (clouds[ekey] != undefined) {
                         if (plane.y - plane.h/2 < clouds[ekey].y + clouds[ekey].h/2 && plane.x - plane.w/2 < clouds[ekey].x + clouds[ekey].w && plane.x + plane.w/2 > clouds[ekey].x) {
@@ -526,7 +534,12 @@ function drawScene() { // основная функция отрисовки с�
                             }
                         }
                     }
+                //  }
                     
+                    if (iplane == 2)
+                    {
+                       plane = plane2;
+                    }
                     //collision with badoblako
                     if (badoblako[okey] != undefined) {
                         if (plane.y - plane.h/2 < badoblako[okey].y + badoblako[okey].h/2 && plane.x - plane.w/2 < badoblako[okey].x + badoblako[okey].w && plane.x + plane.w/2 > badoblako[okey].x) {
@@ -546,6 +559,10 @@ function drawScene() { // основная функция отрисовки с�
                                 return;
                             }
                         }
+                    }
+                    if (iplane == 2)
+                    {
+                       plane = plane2;
                     }
                     //collision with stars
                     if (stars[skey] != undefined) {
@@ -579,6 +596,10 @@ function processPressedKeys() {
             iSprPos = 2;
             iMoveDir = -3;//скорость поворота самолета
         }
+         if (iplane == 2)
+         {
+            plane = plane2;
+         }
         if (plane.x - plane.w / 2 > 10) {
             plane.x += iMoveDir;
         }
@@ -627,12 +648,19 @@ $(function(){
     oStarsImage.src = 'images/zvezda.png';
     oStarsImage.onload = function() { }
 
-    // initialization of plane
+    // initialization of plane1
     var oPlaneImage = new Image();
     oPlaneImage.src = 'images/plan.png';
     oPlaneImage.onload = function() {
         plane = new Plane(canvas.width / 2, canvas.height - 100, planeW, planeH, oPlaneImage);
     }
+    // initialization of plane2
+    var oPlane2Image = new Image();
+        oPlane2Image.src = 'images/plan2.png';
+        oPlane2Image.onload = function() {
+        plane2 = new Plane(canvas.width / 2, canvas.height - 100, planeW, planeH, oPlane2Image);
+    }
+
     // загрузка кнопки меню
     var buttonImage = new Image();
     buttonImage.src = 'images/menu1.png';
@@ -676,8 +704,7 @@ $(function(){
                  } else if(rand  <= 60) {
                      addBadoblako();
                      addStars();
-                 }else 
-                    addStars();
+                 }
             },500);
         }
     });
@@ -961,10 +988,11 @@ $(function(){
         {
             if (button3.state === 'pressed') {
               bplane = false;
-              if (iplane > 1 && iplane <= 2)
+              if (iplane > 1 )
               {
                   iplane = iplane - 1;
               }
+              ctx.fillText(iplane, ctx.canvas.width/2, ctx.canvas.height/2 - 230);
               button.visible=false;
               helpbutton.visible=false;
               button1.visible=false;
@@ -981,10 +1009,11 @@ $(function(){
         {
             if (button4.state === 'pressed') {
               bplane = false;
-              if (iplane >= 1 && iplane < 2)
+              if (iplane >= 1 )
               {
                   iplane = iplane + 1;
               }
+              ctx.fillText(iplane, ctx.canvas.width/2, ctx.canvas.height/2 - 230);
               button.visible=false;
               helpbutton.visible=false;
               button1.visible=false;
