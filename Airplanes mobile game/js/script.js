@@ -118,19 +118,15 @@ function displayIntro() {
     //ctx.drawImage(introImage, 0, 0,700, 700);
     setInterval(drawScene, 20); // loop drawScene
 
-            // and add first cloud
-            addCloud();
-            
-                setInterval(function(){
+        setInterval(function(){
                  var rand = Math.random()*100;
-                 if(rand  <= 40 && !bDrawDialog && !bPause){
-                     //  addCloud();
+                 if(rand  <= 20){
+                       addCloud(); 
                        addStars(); 
-                 } else if(rand  <= 45 && !bDrawDialog && !bPause) {
+                 } else if(rand  <= 30) {
                      addBadoblako();
                      addStars();
-                 }else if(!bDrawDialog && !bPause)
-                    addStars();
+                 }
             },500);
 }
     // Add Cloud function (adds a new cloud randomly)
