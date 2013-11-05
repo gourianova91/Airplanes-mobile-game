@@ -409,7 +409,7 @@ function drawScene() { // основная функция отрисовки с�
             // draw score
             ctx.font = '40px Verdana';
             ctx.fillStyle = '#FFF6EC';
-            ctx.fillText('Finish, your score: ' + iScore * 10 + ' points', ctx.canvas.width/2, ctx.canvas.height/2 - 100);
+            ctx.fillText('Вы проиграли, ваши очки: ' + iScore * 10 + ' points', ctx.canvas.width/2, ctx.canvas.height/2 - 100);
             return;
         }
 
@@ -583,8 +583,8 @@ function drawScene() { // основная функция отрисовки с�
         // display life and score
         ctx.font = '14px Verdana';
         ctx.fillStyle = '#FFF6EC';
-        ctx.fillText('Life: ' + iLife + ' / 100', 55, 660);
-        ctx.fillText('Score: ' + iScore * 10, 55, 680);
+        ctx.fillText('Топливо: ' + iLife + ' / 100', 55, 660);
+        ctx.fillText('Очки: ' + iScore * 10, 55, 680);
     }       
     }
 }
