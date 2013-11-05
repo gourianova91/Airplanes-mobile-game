@@ -271,6 +271,8 @@ function drawDialog() { // функция отрисовки диалога
             {
                tmpImg.src='images/plan2.png';
                plane.image.src=tmpImg.src;
+               plane.w=110;
+               plane.h=143;
                ctx.drawImage(plane.image, iSprPos*plane.w + 15, 0, plane.w+10, plane.h, plane.x - plane.w/2 - 5, plane.y - plane.h/2 - 360, plane.w, plane.h);
                //console.log(iplane);
             }
@@ -543,7 +545,7 @@ function drawScene() { // основная функция отрисовки с�
                     if (badoblako[ekey] != undefined) {
                         console.log(badoblako[ekey].x);
                         console.log(plane.x);
-                        if (plane.y < badoblako[ekey].y + badoblako[ekey].h &&  plane.x > badoblako[ekey].x - badoblako[ekey].h/2 && plane.x < badoblako[ekey].x + badoblako[ekey].h/2 ) {
+                        if (plane.y - plane.h/2 < badoblako[ekey].y + badoblako[ekey].h/2 && plane.x - plane.w/2 < badoblako[ekey].x + badoblako[ekey].w && plane.x + plane.w/2 > badoblako[ekey].x) {
                             //console.log(badoblako[ekey].x);
                             
                             //explosions.push(new Explosion(badoblako[ekey].x + badoblako[ekey].w / 2, badoblako[ekey].y + badoblako[ekey].h / 2, 120, 120, 0, oExplosionImage));
@@ -568,7 +570,7 @@ function drawScene() { // основная функция отрисовки с�
         }
                     //collision with stars
                     if (stars[skey] != undefined) {
-                        if (plane.y - plane.h/2 < stars[skey].y + stars[skey].h/2 && plane.x - plane.w/2 < stars[skey].x + stars[skey].w && plane.x + plane.w/2 > stars[skey].x) {
+                        if (plane.y - plane.h/2 < stars[ekey].y + stars[ekey].h/2 && plane.x - plane.w/2 < stars[ekey].x + stars[ekey].w && plane.x + plane.w/2 > stars[ekey].x) {
                             //explosions.push(new Explosion(badoblako[okey].x + badoblako[okey].w / 2, badoblako[okey].y + badoblako[okey].h / 2, 120, 120, 0, oExplosionImage));
                             console.log(plane.y);
                             // delete enemy and make damage
