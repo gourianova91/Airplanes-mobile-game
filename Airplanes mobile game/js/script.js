@@ -12,6 +12,8 @@ var pausebutton;
 var button5;
 var button6;
 var helpbutton;
+var Continuepbutton;
+var NewGamepbutton;
 var bDrawDialog = true;
 var iDialogPage = 1;
 var pauseclick = 0;
@@ -49,6 +51,7 @@ var iDamage = 10; // damage per cloud plane
 var enTimer = null; // random timer for a new cloud
 var bplane = false; //выбор самолета
 var iplane = 1; //по умолчанию - 1 самолет
+var isSave = false; // по умолчанию игра не сохранена
 // ------------------------------------------------------------
 
 // объекты:
@@ -117,8 +120,9 @@ function displayIntro() {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     //ctx.drawImage(introImage, 0, 0,700, 700);
     setInterval(drawScene, 20); // loop drawScene
+   // Generate();
 
-           // and add first cloud
+          /* // and add first cloud
            addCloud();
            
                 setInterval(function(){
@@ -131,15 +135,32 @@ function displayIntro() {
                      addStars();
                 }else if(!bDrawDialog && !bPause)
                    addStars();
+            },500);*/
+    
+}
+function Generate()
+{
+         // and add first cloud
+         addCloud();
+         setInterval(function(){
+                 var rand = Math.random()*100;
+                 if(rand  <= 20 && !bDrawDialog && !bPause){
+                     //  addCloud(); 
+                       addStars(); 
+                 } else if(rand  <= 25 && !bDrawDialog && !bPause) {
+                     addBadoblako();
+                     addStars();
+                 }
             },500);
 }
+
     // Add Cloud function (adds a new cloud randomly)
     function addCloud() {
     clearInterval(enTimer);
 
     var randX = getRand(0, canvas.height - iCloudH);
     var chanse = getRand(0,100);
-    if(chanse <= 30 && !bDrawDialog && !bPause)
+    if(chanse <= 20 && !bDrawDialog && !bPause)
         {
           clouds.push(new Cloud(randX, 0, iCloudW, iCloudH, - getRand(iCloudSpeedMin, iCloudSpeedMax), oCloudImage)); //скорость теперь настраивается перменными
         }
@@ -205,6 +226,24 @@ function addStars() {
           ctx.closePath(); // конец фигуры
           ctx.fill(); // заполнение фигуры*
     }
+    function NoSave()
+    {
+       iBgShiftY = 9300;
+       iScore = 0;
+       iLife = 100;
+       for (var ekey in clouds) {
+       if (clouds[ekey] !== undefined)
+          delete clouds[ekey];
+       }
+       for (var okey in badoblako) {
+         if (badoblako[okey] !== undefined)
+           delete badoblako[okey];
+          }
+       for (var skey in stars) {
+         if (stars[skey] !== undefined) 
+            delete stars[skey];
+         }
+    }
     
 // фукнции отрисовки :
 function clear() { // функция очистки canvas
@@ -230,13 +269,21 @@ function drawDialog() { // функция отрисовки диалога
         ctx.shadowBlur = 2;
         ctx.fillStyle = '#F4F3FC';
         if (iDialogPage === 1) {
-            ctx.fillText('Airplanes mobile game', ctx.canvas.width/2, ctx.canvas.height/2 - 230);
+            ctx.fillText('Airplanes mobile game', ctx.canvas.width/2, ctx.canvas.height/2 - 280);
             button2.visible=false;
             button3.visible=false;
             button4.visible=false;
             pausebutton.visible=false;
             button5.visible=false;
             button6.visible=false;
+            if (!isSave)
+            {
+               Continuepbutton.visible=false;
+            }
+            else
+            { 
+                Continuepbutton.visible=true;
+            }
         } else if (iDialogPage === 2) {
             ctx.fillText('Выбор самолета', ctx.canvas.width/2, ctx.canvas.height/2 - 300);
             button2.visible=true; 
@@ -246,6 +293,8 @@ function drawDialog() { // функция отрисовки диалога
             button5.visible=false;
             button6.visible=false;
             helpbutton.visible=false;
+            NewGamepbutton.visible=false;
+            Continuepbutton.visible=false;
             if (!bplane)
             {
                ctx.lineWidth = 2;
@@ -286,6 +335,8 @@ function drawDialog() { // функция отрисовки диалога
             button5.visible=false;
             button6.visible=false;
             helpbutton.visible=false;
+            NewGamepbutton.visible=false;
+            Continuepbutton.visible=false;
             ctx.font = '24px Calibri';
             ctx.fillText('Управляйте самолетом ', ctx.canvas.width/2 - 150, 190);
             ctx.drawImage(plane.image, iSprPos*plane.w + 10, 0, plane.w+5, plane.h, plane.x - plane.w/2 + 30, plane.y - plane.h/2 - 360, plane.w/2, plane.h/2);
@@ -317,7 +368,7 @@ function drawButton() { // функция отрисовки кнопки
 		// отрисовка текста на кнопке
 		ctx.font = '20px Condensed';
 		ctx.fillStyle = '#F4F3FC';
-		ctx.fillText('Играть', ctx.canvas.width/2 - 3, ctx.canvas.height/2 - 87);
+		ctx.fillText('Новая игра', ctx.canvas.width/2 - 3, ctx.canvas.height/2 - 87);
 	}
         if(button1.visible==true)
 	{
@@ -393,6 +444,16 @@ function drawButton() { // функция отрисовки кнопки
 		ctx.font = '19px Condensed';
 		ctx.fillStyle = '#F4F3FC';
 		ctx.fillText('Справка', ctx.canvas.width/2 - 3, ctx.canvas.height/2 + 39);
+	}
+        if(Continuepbutton.visible==true)
+	{
+		// отрисовка кнопки
+		ctx.drawImage(Continuepbutton.image, 0, Continuepbutton.imageShift, Continuepbutton.w, Continuepbutton.h, Continuepbutton.x, Continuepbutton.y, Continuepbutton.w, Continuepbutton.h);
+
+		// отрисовка текста на кнопке
+		ctx.font = '19px Condensed';
+		ctx.fillStyle = '#F4F3FC';
+		ctx.fillText('Продолжить', ctx.canvas.width/2 - 3, ctx.canvas.height/2 - 151);
 	}
 }
 
@@ -542,7 +603,7 @@ function drawScene() { // основная функция отрисовки с�
                 if (badoblako[ekey] != undefined) {
 
                     // collisions with plane
-                    if (badoblako[ekey] != undefined) {
+                //    if (badoblako[ekey] != undefined) {
                         console.log(badoblako[ekey].x);
                         console.log(plane.x);
                         if (plane.y - plane.h/2 < badoblako[ekey].y + badoblako[ekey].h/2 && plane.x - plane.w/2 < badoblako[ekey].x + badoblako[ekey].w && plane.x + plane.w/2 > badoblako[ekey].x) {
@@ -564,10 +625,11 @@ function drawScene() { // основная функция отрисовки с�
                                 return;
                             }
                         }
-                    }
+                  //  }
                 }
             }
-        }
+                    for (var ekey in stars) {
+			if (stars[ekey] != undefined) {
                     //collision with stars
                     if (stars[skey] != undefined) {
                         if (plane.y - plane.h/2 < stars[ekey].y + stars[ekey].h/2 && plane.x - plane.w/2 < stars[ekey].x + stars[ekey].w && plane.x + plane.w/2 > stars[ekey].x) {
@@ -579,6 +641,9 @@ function drawScene() { // основная функция отрисовки с�
 
                             }
                         }
+                        }
+                    }
+        }
                 }
             }
         }
@@ -671,41 +736,22 @@ $(function(){
     pauseImage.src = 'images/pause-button1.png';
     pauseImage.onload = function() {
     }
-    button = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 100, 202, 52, 'normal', buttonImage);//кнопка Играть
-    button1 = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 35, 202, 52, 'normal', buttonImage); //кнопка Выбор самолета
+    button = new Button(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 100, 202, 52, 'normal', buttonImage);//кнопка Новая игра
+    button1 = new Button(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 35, 202, 52, 'normal', buttonImage); //кнопка Выбор самолета
     button2 = new Button(ctx.canvas.width/2 - 300, ctx.canvas.height/2 + 250, 202, 52, 'normal', buttonImage); //кнопка возврат в Меню из диалога Выбора самолета
     button3 = new Button(ctx.canvas.width/2 - 250, ctx.canvas.height/2 + 40, 202, 52, 'normal', buttonImage); //кнопка Предыдущий самолет
     button4 = new Button(ctx.canvas.width/2 + 50, ctx.canvas.height/2 + 40, 202, 52, 'normal', buttonImage); //кнопка Следующий самолет
     pausebutton = new Button(ctx.canvas.width/2 - 345, ctx.canvas.height/2 - 345, 38, 38, 'normal', pauseImage); //кнопка паузы
-    button5 = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 100, 202, 52, 'normal', buttonImage); //кнопка Сохранить и выйти
-    button6 = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 - 35, 202, 52, 'normal', buttonImage); //кнопка Выйти без сохранения
-    helpbutton = new Button(ctx.canvas.height/2 - 100, ctx.canvas.width/2 + 25, 202, 52, 'normal', buttonImage); //кнопка Справка
+    button5 = new Button(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 100, 202, 52, 'normal', buttonImage); //кнопка Сохранить и выйти
+    button6 = new Button(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 35, 202, 52, 'normal', buttonImage); //кнопка Выйти без сохранения
+    helpbutton = new Button(ctx.canvas.width/2 - 100, ctx.canvas.height/2 + 25, 202, 52, 'normal', buttonImage); //кнопка Справка
+    Continuepbutton = new Button(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 165, 202, 52, 'normal', buttonImage); //кнопка Продолжить
+    NewGamepbutton = new Button(ctx.canvas.width/2 + 50, ctx.canvas.height/2 - 25, 202, 52, 'normal', buttonImage); //кнопка Новая игра
     
     $(window).keydown(function (evt){ // onkeydown event handle
         var pk = pressedKeys[evt.keyCode];
         if (! pk) {
             pressedKeys[evt.keyCode] = 1; // add all pressed keys into array
-        }
-
-        if (bPause && evt.keyCode == 13) { // in case of Enter button
-            bPause = false;
-
-            // start main animation
-            setInterval(drawScene, 20); // loop drawScene
-
-            // and add first cloud
-            addCloud();
-            
-            setInterval(function(){
-                 var rand = Math.random()*100;
-                 if(rand  <= 40){
-                       addCloud();
-                       addStars(); 
-                 } else if(rand  <= 60) {
-                     addBadoblako();
-                     addStars();
-                 }
-            },500);
         }
     });
 
@@ -806,6 +852,20 @@ $(function(){
                 helpbutton.imageShift = 112;
             }
         }
+        if(Continuepbutton.visible)
+	{
+            if (mouseX > Continuepbutton.x && mouseX < Continuepbutton.x+Continuepbutton.w && mouseY > Continuepbutton.y && mouseY < Continuepbutton.y+Continuepbutton.h) {
+                Continuepbutton.state = 'pressed';
+                Continuepbutton.imageShift = 112;
+            }
+	}
+        if(NewGamepbutton.visible)
+	{
+            if (mouseX > NewGamepbutton.x && mouseX < NewGamepbutton.x+NewGamepbutton.w && mouseY > NewGamepbutton.y && mouseY < NewGamepbutton.y+NewGamepbutton.h) {
+                NewGamepbutton.state = 'pressed';
+                NewGamepbutton.imageShift = 112;
+            }
+	}
     });
 
     $('#scene').mousemove(function(e) { // привязываем событие движения мыши
@@ -912,43 +972,73 @@ $(function(){
                 }
             }
         }
+        if(Continuepbutton.visible)
+	{
+            if (Continuepbutton.state != 'pressed') {
+                Continuepbutton.state = 'normal';
+                Continuepbutton.imageShift = 0;
+                if (mouseX > Continuepbutton.x && mouseX < Continuepbutton.x+Continuepbutton.w && mouseY > Continuepbutton.y && mouseY < Continuepbutton.y+Continuepbutton.h) {
+                    Continuepbutton.state = 'hover';
+                    Continuepbutton.imageShift = 54;
+                }
+            }
+	}
+        if(NewGamepbutton.visible)
+	{
+            if (NewGamepbutton.state != 'pressed') {
+                NewGamepbutton.state = 'normal';
+                NewGamepbutton.imageShift = 0;
+                if (mouseX > NewGamepbutton.x && mouseX < NewGamepbutton.x+NewGamepbutton.w && mouseY > NewGamepbutton.y && mouseY < NewGamepbutton.y+NewGamepbutton.h) {
+                    NewGamepbutton.state = 'hover';
+                    NewGamepbutton.imageShift = 54;
+                }
+            }
+	}
     });
 
     $('#scene').mouseup(function(e) { // привязываем событие отжатия кнопки
 
         // поведение кнопок
-        //кнопка Играть
+        //кнопка Новая игра
         if(button.visible)
         {
             if (button.state === 'pressed') {
-                // and add first cloud
-               addCloud();
-            
-                setInterval(function(){
-                 var rand = Math.random()*100;
-                 if(rand  <= 40 && !bDrawDialog && !bPause){
-                     //  addCloud();
-                       addStars(); 
-                 } else if(rand  <= 35 && !bDrawDialog && !bPause) {
-                     addBadoblako();
-                     addStars();
-                 }else if(!bDrawDialog && !bPause)
-                    addStars();
-                },500);
-                iDialogPage = 0;
-                bDrawDialog = false;
-                bPause = false;
-                button.visible=false;
-                helpbutton.visible=false;
-                button1.visible=false;
-                button2.visible=false;
-                button3.visible=false;
-                button4.visible=false;
+                  Generate();
+                  NoSave();
+                  iDialogPage = 0;
+                  bDrawDialog = false;
+                  bPause = false;
+                  button.visible=false;
+                  helpbutton.visible=false;
+                  button1.visible=false;
+                  button2.visible=false;
+                  button3.visible=false;
+                  button4.visible=false;
+                  NewGamepbutton.visible=false;
+                  Continuepbutton.visible=false;
             }
                 
         }
         button.state = 'normal';
         button.imageShift = 0;
+        //кнопка Продолжить
+        if(Continuepbutton.visible)
+        {
+            if (Continuepbutton.state === 'pressed') {
+                  iDialogPage = 0;
+                  bDrawDialog = false;
+                  bPause = false;
+                  button.visible=false;
+                  helpbutton.visible=false;
+                  button1.visible=false;
+                  button2.visible=false;
+                  button3.visible=false;
+                  button4.visible=false;
+                  Continuepbutton.visible=false;
+            }
+        }
+        Continuepbutton.state = 'normal';
+        Continuepbutton.imageShift = 0;
         //кнопка Выбор самолета
         if(button1.visible)
         {
@@ -960,6 +1050,8 @@ $(function(){
                 button2.visible=true;
                 button3.visible=true;
                 button4.visible=true;
+                NewGamepbutton.visible=false;
+                Continuepbutton.visible=false;
             }
         }
         button1.state = 'normal';
@@ -975,6 +1067,8 @@ $(function(){
               button2.visible=false;
               button3.visible=false;
               button4.visible=false;
+              NewGamepbutton.visible=false;
+              Continuepbutton.visible=false;
             }
 
         }
@@ -995,6 +1089,8 @@ $(function(){
               button2.visible=true;
               button3.visible=true;
               button4.visible=true;
+              NewGamepbutton.visible=false;
+              Continuepbutton.visible=false;
             }
 
         }
@@ -1015,6 +1111,8 @@ $(function(){
               button2.visible=true;
               button3.visible=true;
               button4.visible=true;
+              NewGamepbutton.visible=false;
+              Continuepbutton.visible=false;
             }
         }
         button4.state = 'normal';
@@ -1023,6 +1121,8 @@ $(function(){
         if(pausebutton.visible)
         {
             if (pausebutton.state === 'pressed') {
+              NewGamepbutton.visible=false;
+              Continuepbutton.visible=false;
               if (pauseclick == 0)
               {
                 drawGradient();
@@ -1049,6 +1149,7 @@ $(function(){
               clear();
               bDrawDialog = true;
               drawDialog();
+              isSave = true;
               iDialogPage = 1;
               button.visible=true;
               helpbutton.visible=true;
@@ -1058,6 +1159,8 @@ $(function(){
               button4.visible=false;
               button5.visible=false;
               button6.visible=false;
+              NewGamepbutton.visible=false;
+              Continuepbutton.visible=false;
             }
 
         }
@@ -1071,22 +1174,9 @@ $(function(){
               ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
               bDrawDialog = true;
               drawDialog();
+              isSave = false;
               iDialogPage = 1;
-              iBgShiftY = 9300;
-              iScore = 0;
-              iLife = 100;
-              for (var ekey in clouds) {
-               if (clouds[ekey] !== undefined)
-                 delete clouds[ekey];
-              }
-              for (var okey in badoblako) {
-               if (badoblako[okey] !== undefined)
-               delete badoblako[okey];
-              }
-              for (var skey in stars) {
-               if (stars[skey] !== undefined) 
-                delete stars[skey];
-              }
+              NoSave();
               button.visible=true;
               helpbutton.visible=true;
               button1.visible=true;
@@ -1095,6 +1185,8 @@ $(function(){
               button4.visible=false;
               button5.visible=false;
               button6.visible=false;
+              NewGamepbutton.visible=false;
+              Continuepbutton.visible=false;
             }
 
         }
@@ -1111,6 +1203,8 @@ $(function(){
                 button2.visible=true;
                 button3.visible=false;
                 button4.visible=false;
+                NewGamepbutton.visible=false;
+                Continuepbutton.visible=false;
             }
         }
         helpbutton.state = 'normal';
