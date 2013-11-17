@@ -21,15 +21,19 @@ var oExplosionImage;
 var oCloudImage;
 var oBadoblakoImage;
 var oStarsImage;
+var oCoinsImage;
 var tmpImg = null;
 
 var iBgShiftY = 9300; //10000 (level length) - 700 (canvas height)
 var bPause = false; // game pause
-var plane = null; // plane1 object
+var stars = null; // stars object
+var coins = null; // coins object
+var plane = null; // plane object
 var clouds = []; // array of clouds
-var explosions = []; // array of explosions
+//var explosions = []; // array of explosions
 var badoblako = []; // array of badoblako
 var stars = []; // array of stars
+var coins = []; // array of coins
 var planeW = 120; // plane width
 var planeH = 160; // plane height
 var iSprPos = 1; // initial sprite frame for plane
@@ -40,18 +44,23 @@ var iBadoblakoW = 174; // badoblako width
 var iBadoblakoH = 100; // badoblako height
 var istarW = 20; // star width
 var istarH = 20; // star height
+var icoinW = 100; // star width
+var icoinH = 100; // star height
 var iRocketSpeed = 10; // initial rocket speed
 var iCloudSpeed = 3; // initial cloud speed
 var iCloudSpeedMin = 3; // минимальная скорость облака
 var iCloudSpeedMax = 4; //максимальная скорость облака
 var pressedKeys = []; // array of pressed keys
 var iScore = 0; // total score
+var points = 0; // очки
 var iLife = 100; // total life of plane
 var iDamage = 10; // damage per cloud plane
 var enTimer = null; // random timer for a new cloud
 var bplane = false; //выбор самолета
 var iplane = 1; //по умолчанию - 1 самолет
 var isSave = false; // по умолчанию игра не сохранена
+var icoinNumber = 0; //количество монет
+var isEnd = true; // по умолчанию игра не окончена
 // ------------------------------------------------------------
 
 // объекты:
@@ -83,14 +92,14 @@ function Cloud(x, y, w, h, speed, image) {
     this.speed = speed;
     this.image = image;
 }
-function Explosion(x, y, w, h, sprite, image) {
+/*function Explosion(x, y, w, h, sprite, image) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
     this.sprite = sprite;
     this.image = image;
-}
+}*/
 function Badoblako(x, y, w, h, sprite, image, speed) {
     this.x = x;
     this.y = y;
@@ -109,6 +118,14 @@ function Stars(x, y, w, h, sprite, image, speed){
     this.image = image;
     this.speed = speed;
 }
+function Coins(x, y, w, h, sprite, image){
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.sprite = sprite;
+    this.image = image;
+}
 
 // -------------------------------------------------------------
 // получить случайное число между X и Y
@@ -120,6 +137,7 @@ function displayIntro() {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     //ctx.drawImage(introImage, 0, 0,700, 700);
     setInterval(drawScene, 20); // loop drawScene
+    coins.push(new Coins(ctx.canvas.width/2 + 120, 545, icoinW, icoinH, 0 , oCoinsImage));
    // Generate();
 
           /* // and add first cloud
@@ -152,6 +170,7 @@ function Generate()
                      addStars();
                  }
             },500);
+            
 }
 
     // Add Cloud function (adds a new cloud randomly)
@@ -162,7 +181,7 @@ function Generate()
     var chanse = getRand(0,100);
     if(chanse <= 20 && !bDrawDialog && !bPause)
         {
-          clouds.push(new Cloud(randX, 0, iCloudW, iCloudH, - getRand(iCloudSpeedMin, iCloudSpeedMax), oCloudImage)); //скорость теперь настраивается перменными
+          clouds.push(new Cloud(randX, 0, iCloudW, iCloudH, - getRand(iCloudSpeedMin, iCloudSpeedMax), oCloudImage)); //скорость теперь настраивается переменными
         }
     var interval = getRand(900, 1000);
    // var interval = getRand(5000, 10000);
@@ -226,6 +245,7 @@ function addStars() {
           ctx.closePath(); // конец фигуры
           ctx.fill(); // заполнение фигуры*
     }
+    
     function NoSave()
     {
        iBgShiftY = 9300;
@@ -250,6 +270,30 @@ function clear() { // функция очистки canvas
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
+var inc = true;
+var setValue = function(elem, value, inc, shift, speed){
+    var interval = false; 
+    if (inc) {
+        interval = setInterval(function(){
+            if (elem*1+shift >= value) {
+                elem = value;
+                clearInterval(interval);
+            } else {
+                elem = elem*1+shift;
+            }
+        }, speed);
+    } /*else {
+        interval = setInterval(function(){
+            if (elem.innerHTML*1-shift <= value) {
+                elem.innerHTML = value;
+                clearInterval(interval);
+            } else {
+                elem.innerHTML = elem.innerHTML*1-shift;
+            }
+        }, speed);
+    }*/   
+};
+
 function drawDialog() { // функция отрисовки диалога
     if (bDrawDialog) {
         // draw background
@@ -258,7 +302,6 @@ function drawDialog() { // функция отрисовки диалога
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'rgba(224, 224, 224, 0.4)';
         ctx.stroke(); // отрисовка границы
-
         // отрисовка текста
         ctx.font = '42px Condensed';
         ctx.textAlign = 'center';
@@ -349,13 +392,54 @@ function drawDialog() { // функция отрисовки диалога
             ctx.fillText('. Собирайте звездочки ', ctx.canvas.width/2 + 100, 300);
             ctx.drawImage(oStarsImage, 0, 0, istarW*2, istarH*2, ctx.canvas.width/2 + 210, ctx.canvas.height/2 - 50, istarW*2, istarH*2);
             ctx.fillText('для ', ctx.canvas.width/2 + 285, 300);
-            ctx.fillText('открытия новых моделей самолетов и баки с топливом', ctx.canvas.width/2 + 5, 350);
-            ctx.fillText('для пополнения топлива самолета.', ctx.canvas.width/2 - 100, 400);
+            ctx.fillText('накопления очков и получения монет', ctx.canvas.width/2 - 85, 350);
+            ctx.drawImage(oCoinsImage, 0, 0, icoinW, icoinH, ctx.canvas.width/2 + 120, 345, icoinW/2.5, icoinH/2.5);
+            ctx.fillText('и баки с', ctx.canvas.width/2 + 210, 350);
+            ctx.fillText('топливом для пополнения топлива самолета.', ctx.canvas.width/2 - 45, 400);
           }
+          else if (iDialogPage === 4) {
+            button5.visible=true;
+            button6.visible=true;
+            pausebutton.visible=false;  
+            // draw score
+            ctx.font = '28px Verdana';
+            ctx.fillStyle = '#fff';
+            points = iScore * 10;
+            ctx.fillText('Game over, your score: ' + points + ' points', ctx.canvas.width/2, ctx.canvas.height/2 - 250);  
+            //setValue(points, iScore * 10, true, 10, 1);
+            ctx.fillText('x ', ctx.canvas.width/2 + 10, ctx.canvas.height/2 - 185); 
+            if(points > 100) 
+            {
+                icoinNumber = 1;
+            }
+            else if (points > 500)
+            {
+                icoinNumber = 2;
+            }
+            else if (points > 1000)
+            {
+                icoinNumber = 3;
+            }
+            ctx.font = '35px Verdana';
+            ctx.fillStyle = '#fff';
+            ctx.fillText(icoinNumber, ctx.canvas.width/2 + 40, ctx.canvas.height/2 - 190);
+            //draw coins
+            if (coins.length > 0) {
+             for (var skey in coins) {
+                if (coins[skey] !== undefined) {
+                   ctx.drawImage(coins[skey].image, coins[skey].sprite*coins[skey].w, 0, coins[skey].w, coins[skey].h, ctx.canvas.width/2 - 60, ctx.canvas.height/2 - 190, coins[skey].w/2, coins[skey].h/2);
+                   coins[skey].sprite++;
+                  if (coins[skey].sprite > 9) {
+                    coins[skey].sprite = 0;
+                  } 
+                }
+             }
+          }
+         }
     }
     else if (!bDrawDialog)
     {
-        pausebutton.visible=true;
+       pausebutton.visible=true;
     }
 }
 
@@ -456,7 +540,7 @@ function drawButton() { // функция отрисовки кнопки
 		ctx.fillText('Продолжить', ctx.canvas.width/2 - 3, ctx.canvas.height/2 - 151);
 	}
 }
-
+                
 // функции рисования:
 function drawScene() { // основная функция отрисовки сцены  
     // отрисовка диалога
@@ -466,14 +550,19 @@ function drawScene() { // основная функция отрисовки с�
     {
         if (! bPause) {
         iBgShiftY -= 2; // move main ground
+          /*  bDrawDialog = true;
+            iDialogPage = 4;*/
         if (iBgShiftY < 5) { // Finish position
             bPause = true;
             //clear();
             // draw score
-            ctx.font = '40px Verdana';
+          /*  ctx.font = '40px Verdana';
             ctx.fillStyle = '#FFF6EC';
-            ctx.fillText('Вы проиграли, ваши очки: ' + iScore * 10 + ' points', ctx.canvas.width/2, ctx.canvas.height/2 - 100);
-            return;
+            ctx.fillText('Вы проиграли, ваши очки: ' + iScore * 10 + ' points', ctx.canvas.width/2, ctx.canvas.height/2 - 100);*/
+            bDrawDialog = true;
+            iDialogPage = 4;
+            isEnd = true;
+            //return;
         }
 
         // process pressed keys (movement of plane)
@@ -498,7 +587,7 @@ function drawScene() { // основная функция отрисовки с�
         // draw pause
         ctx.drawImage(pausebutton.image, 0, pausebutton.imageShift, pausebutton.w, pausebutton.h, pausebutton.x, pausebutton.y, pausebutton.w, pausebutton.h);
 
-        // draw explosions
+      /*  // draw explosions
         if (explosions.length > 0) {
             for (var key in explosions) {
                 if (explosions[key] != undefined) {
@@ -512,7 +601,8 @@ function drawScene() { // основная функция отрисовки с�
                     }
                 }
             }
-        }
+        }*/
+            
         
         // draw badoblako
         if (badoblako.length > 0) {
@@ -589,10 +679,13 @@ function drawScene() { // основная функция отрисовки с�
                                 bPause = true;
 
                                 // draw score
-                                ctx.font = '38px Verdana';
+                             /*   ctx.font = '38px Verdana';
                                 ctx.fillStyle = '#fff';
-                                ctx.fillText('Вы проиграли, ваши очки: ' + iScore * 10 + ' points', ctx.canvas.width/2, ctx.canvas.height/2 - 100);
-                                return;
+                                ctx.fillText('Вы проиграли, ваши очки: ' + iScore * 10 + ' points', ctx.canvas.width/2, ctx.canvas.height/2 - 100);*/
+                                bDrawDialog = true;
+                                iDialogPage = 4;
+                                isEnd = true;
+                              //  return;
                             }
                         }
                     }
@@ -619,10 +712,13 @@ function drawScene() { // основная функция отрисовки с�
                                 bPause = true;
 
                                 // draw score
-                                ctx.font = '38px Verdana';
+                               /* ctx.font = '38px Verdana';
                                 ctx.fillStyle = '#fff';
-                                ctx.fillText('Game over, your score: ' + iScore * 10 + ' points:'+ plane.y, 25, 200);
-                                return;
+                                ctx.fillText('Game over, your score: ' + iScore * 10 + ' points:'+ plane.y, 25, 200);*/
+                                bDrawDialog = true;
+                                iDialogPage = 4;  
+                                isEnd = true;
+                               // return;
                             }
                         }
                   //  }
@@ -712,6 +808,11 @@ $(function(){
     oStarsImage = new Image();
     oStarsImage.src = 'images/zvezda.png';
     oStarsImage.onload = function() { }
+    
+    //initialization of coins 
+    oCoinsImage = new Image();
+    oCoinsImage.src = 'images/coin.png';
+    oCoinsImage.onload = function() { }
 
     // initialization of plane1
     var oPlaneImage = new Image();
@@ -1136,7 +1237,7 @@ $(function(){
                 bPause = false;
                 pauseclick = 0;
                 button5.visible=false;
-                button6.visible=false
+                button6.visible=false;
               }
             }
         }
@@ -1161,6 +1262,10 @@ $(function(){
               button6.visible=false;
               NewGamepbutton.visible=false;
               Continuepbutton.visible=false;
+              if(isEnd)
+              {
+                  NoSave();    
+              }
             }
 
         }
