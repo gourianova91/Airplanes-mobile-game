@@ -14,6 +14,7 @@ var button6;
 var helpbutton;
 var Continuepbutton;
 var NewGamepbutton;
+var playerbutton;
 var bDrawDialog = true;
 var iDialogPage = 1;
 var pauseclick = 0;
@@ -23,6 +24,8 @@ var oBadoblakoImage;
 var oStarsImage;
 var oCoinsImage;
 var tmpImg = null;
+var changePlane = false;
+var ichgplayer = false;
 
 var iBgShiftY = 9300; //10000 (level length) - 700 (canvas height)
 var bPause = false; // game pause
@@ -61,6 +64,7 @@ var iplane = 1; //по умолчанию - 1 самолет
 var isSave = false; // по умолчанию игра не сохранена
 var icoinNumber = 0; //количество монет
 var isEnd = true; // по умолчанию игра не окончена
+var iplayer = 1; //по умолчанию - игрок 1
 // ------------------------------------------------------------
 
 // объекты:
@@ -138,6 +142,7 @@ function displayIntro() {
     //ctx.drawImage(introImage, 0, 0,700, 700);
     setInterval(drawScene, 20); // loop drawScene
     coins.push(new Coins(ctx.canvas.width/2 + 120, 545, icoinW, icoinH, 0 , oCoinsImage));
+    stars.push(new Stars(ctx.canvas.width/2 + 120, 545, istarW, istarH, 0 , oStarsImage));
    // Generate();
 
           /* // and add first cloud
@@ -435,7 +440,71 @@ function drawDialog() { // функция отрисовки диалога
                 }
              }
           }
+          ctx.font = '25px Verdana';
+          ctx.fillStyle = '#fff';
+          ctx.fillText("Имя игрока:", ctx.canvas.width/2 - 50, ctx.canvas.height/2 - 110);
+          ctx.fillStyle = '#F4F3FC';
+          ctx.fillText("Игрок " + iplayer, ctx.canvas.width/2 + 90, ctx.canvas.height/2 - 110);
          }
+         else if (iDialogPage === 5) {
+            ctx.fillText('Смена игрока', ctx.canvas.width/2, ctx.canvas.height/2 - 300);
+            button2.visible=true; 
+            button3.visible=true;
+            button4.visible=true;
+            pausebutton.visible=false;
+            button5.visible=false;
+            button6.visible=false;
+            helpbutton.visible=false;
+            playerbutton.visible=false;
+            NewGamepbutton.visible=false;
+            Continuepbutton.visible=false;
+            if (!ichgplayer)
+            {
+               ctx.lineWidth = 2;
+               ctx.strokeStyle = 'rgba(224, 224, 224, 0.4)';
+               ctx.strokeRect(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 200, 200, 200);
+            }
+            else
+            {
+               ctx.lineWidth = 5;
+               ctx.strokeStyle = 'rgba(255, 255, 204, 0.4)';
+               ctx.strokeRect(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 200, 200, 200);
+            }
+             // информация об игроке
+                ctx.font = '25px Verdana';
+                ctx.fillStyle = '#fff';
+                ctx.fillText("Игрок " + iplayer, ctx.canvas.width/2, ctx.canvas.height/2 - 180);
+                ctx.fillText('x ', ctx.canvas.width/2, ctx.canvas.height/2 - 70); 
+                ctx.fillText('x ', ctx.canvas.width/2, ctx.canvas.height/2 - 130); 
+                ctx.font = '35px Verdana';
+                ctx.fillStyle = '#fff';
+                ctx.fillText(points, ctx.canvas.width/2 + 75, ctx.canvas.height/2 - 135);
+                ctx.fillText(icoinNumber, ctx.canvas.width/2 + 45, ctx.canvas.height/2 - 75);
+                //draw stars
+                if (stars.length > 0) {
+                  for (var skey in stars) {
+                    if (stars[skey] !== undefined) {
+                    ctx.drawImage(stars[skey].image, stars[skey].sprite*stars[skey].w, 0, stars[skey].w, stars[skey].h, ctx.canvas.width/2 - 55, ctx.canvas.height/2 - 135, stars[skey].w*1.5, stars[skey].h*1.5);
+                    stars[skey].sprite++;          
+                    if (stars[skey].sprite > 10) {
+                        stars[skey].sprite = 0;
+                    }
+                    }
+                   }
+                }
+                //draw coins
+                if (coins.length > 0) {
+                 for (var skey in coins) {
+                  if (coins[skey] !== undefined) {
+                       ctx.drawImage(coins[skey].image, coins[skey].sprite*coins[skey].w, 0, coins[skey].w, coins[skey].h, ctx.canvas.width/2 - 65, ctx.canvas.height/2 - 83, coins[skey].w/2, coins[skey].h/2);
+                       coins[skey].sprite++;
+                         if (coins[skey].sprite > 9) {
+                          coins[skey].sprite = 0;
+                         } 
+                  }
+                 }
+                }
+        }
     }
     else if (!bDrawDialog)
     {
@@ -507,7 +576,7 @@ function drawButton() { // функция отрисовки кнопки
 		// отрисовка текста на кнопке
 		ctx.font = '19px Condensed';
 		ctx.fillStyle = '#F4F3FC';
-		ctx.fillText('Сохранить и выйти', ctx.canvas.width/2 - 3, ctx.canvas.height/2 - 87);
+		ctx.fillText('Сохранить и выйти', ctx.canvas.width/2 - 3, ctx.canvas.height/2 - 20);
 	}
         if(button6.visible==true)
 	{
@@ -517,7 +586,7 @@ function drawButton() { // функция отрисовки кнопки
 		// отрисовка текста на кнопке
 		ctx.font = '19px Condensed';
 		ctx.fillStyle = '#F4F3FC';
-		ctx.fillText('Выйти без сохранения', ctx.canvas.width/2 - 2, ctx.canvas.height/2 - 23);
+		ctx.fillText('Выйти без сохранения', ctx.canvas.width/2 - 2, ctx.canvas.height/2 + 43);
 	}
         if(helpbutton.visible==true)
 	{
@@ -538,6 +607,16 @@ function drawButton() { // функция отрисовки кнопки
 		ctx.font = '19px Condensed';
 		ctx.fillStyle = '#F4F3FC';
 		ctx.fillText('Продолжить', ctx.canvas.width/2 - 3, ctx.canvas.height/2 - 151);
+	}
+        if(playerbutton.visible==true)
+	{
+		// отрисовка кнопки
+		ctx.drawImage(playerbutton.image, 0, playerbutton.imageShift, playerbutton.w, playerbutton.h, playerbutton.x, playerbutton.y, playerbutton.w, playerbutton.h);
+
+		// отрисовка текста на кнопке
+		ctx.font = '19px Condensed';
+		ctx.fillStyle = '#F4F3FC';
+		ctx.fillText('Смена игрока', ctx.canvas.width/2 - 3, ctx.canvas.height/2 + 99);
 	}
 }
                 
@@ -843,11 +922,12 @@ $(function(){
     button3 = new Button(ctx.canvas.width/2 - 250, ctx.canvas.height/2 + 40, 202, 52, 'normal', buttonImage); //кнопка Предыдущий самолет
     button4 = new Button(ctx.canvas.width/2 + 50, ctx.canvas.height/2 + 40, 202, 52, 'normal', buttonImage); //кнопка Следующий самолет
     pausebutton = new Button(ctx.canvas.width/2 - 345, ctx.canvas.height/2 - 345, 38, 38, 'normal', pauseImage); //кнопка паузы
-    button5 = new Button(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 100, 202, 52, 'normal', buttonImage); //кнопка Сохранить и выйти
-    button6 = new Button(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 35, 202, 52, 'normal', buttonImage); //кнопка Выйти без сохранения
+    button5 = new Button(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 35, 202, 52, 'normal', buttonImage); //кнопка Сохранить и выйти
+    button6 = new Button(ctx.canvas.width/2 - 100, ctx.canvas.height/2 + 30, 202, 52, 'normal', buttonImage); //кнопка Выйти без сохранения
     helpbutton = new Button(ctx.canvas.width/2 - 100, ctx.canvas.height/2 + 25, 202, 52, 'normal', buttonImage); //кнопка Справка
     Continuepbutton = new Button(ctx.canvas.width/2 - 100, ctx.canvas.height/2 - 165, 202, 52, 'normal', buttonImage); //кнопка Продолжить
     NewGamepbutton = new Button(ctx.canvas.width/2 + 50, ctx.canvas.height/2 - 25, 202, 52, 'normal', buttonImage); //кнопка Новая игра
+    playerbutton = new Button(ctx.canvas.width/2 - 100, ctx.canvas.height/2 + 85, 202, 52, 'normal', buttonImage); //кнопка Смена игрока
     
     $(window).keydown(function (evt){ // onkeydown event handle
         var pk = pressedKeys[evt.keyCode];
@@ -887,7 +967,21 @@ $(function(){
                 if (mouseX >  ctx.canvas.width/2 - 100 && mouseX <  ctx.canvas.width/2 - 100 + 200 && mouseY > ctx.canvas.height/2 - 200 && mouseY < ctx.canvas.height/2 - 200 + 200) {
                     bplane = true;
                 }
+                else
+                {
+                    bplane = false;
+                }
             }
+        if (iDialogPage == 5)
+        {
+            if (mouseX >  ctx.canvas.width/2 - 100 && mouseX <  ctx.canvas.width/2 - 100 + 200 && mouseY > ctx.canvas.height/2 - 200 && mouseY < ctx.canvas.height/2 - 200 + 200) {
+               ichgplayer = true;
+            }
+            else
+            {
+               ichgplayer = false;
+            }
+        }
 
         // поведение кнопок
         if(button.visible)
@@ -965,6 +1059,13 @@ $(function(){
             if (mouseX > NewGamepbutton.x && mouseX < NewGamepbutton.x+NewGamepbutton.w && mouseY > NewGamepbutton.y && mouseY < NewGamepbutton.y+NewGamepbutton.h) {
                 NewGamepbutton.state = 'pressed';
                 NewGamepbutton.imageShift = 112;
+            }
+	}
+        if(playerbutton.visible)
+	{
+            if (mouseX > playerbutton.x && mouseX < playerbutton.x+playerbutton.w && mouseY > playerbutton.y && mouseY < playerbutton.y+playerbutton.h) {
+                playerbutton.state = 'pressed';
+                playerbutton.imageShift = 112;
             }
 	}
     });
@@ -1095,6 +1196,17 @@ $(function(){
                 }
             }
 	}
+        if(playerbutton.visible)
+	{
+            if (playerbutton.state != 'pressed') {
+                playerbutton.state = 'normal';
+                playerbutton.imageShift = 0;
+                if (mouseX > playerbutton.x && mouseX < playerbutton.x+playerbutton.w && mouseY > playerbutton.y && mouseY < playerbutton.y+playerbutton.h) {
+                    playerbutton.state = 'hover';
+                    playerbutton.imageShift = 54;
+                }
+            }
+	}
     });
 
     $('#scene').mouseup(function(e) { // привязываем событие отжатия кнопки
@@ -1111,6 +1223,7 @@ $(function(){
                   bPause = false;
                   button.visible=false;
                   helpbutton.visible=false;
+                  playerbutton.visible=false;
                   button1.visible=false;
                   button2.visible=false;
                   button3.visible=false;
@@ -1131,6 +1244,7 @@ $(function(){
                   bPause = false;
                   button.visible=false;
                   helpbutton.visible=false;
+                  playerbutton.visible=false;
                   button1.visible=false;
                   button2.visible=false;
                   button3.visible=false;
@@ -1145,9 +1259,11 @@ $(function(){
         {
             if (button1.state === 'pressed') {
                 iDialogPage = 2;
+                changePlane = true;
                 button.visible=false;
                 helpbutton.visible=false;
                 button1.visible=false;
+                playerbutton.visible=false;
                 button2.visible=true;
                 button3.visible=true;
                 button4.visible=true;
@@ -1164,6 +1280,7 @@ $(function(){
               iDialogPage = 1;
               button.visible=true;
               helpbutton.visible=true;
+              playerbutton.visible=true;
               button1.visible=true;
               button2.visible=false;
               button3.visible=false;
@@ -1179,13 +1296,25 @@ $(function(){
         if(button3.visible)
         {
             if (button3.state === 'pressed') {
-              bplane = false;
-              if (iplane > 1 )
+              if(changePlane)
               {
-                  iplane = iplane - 1;
+                 bplane = false;
+                   if (iplane > 1 )
+                    {
+                       iplane = iplane - 1;
+                    }
               }
+              else
+              {
+                 ichgplayer = false;
+                   if (iplayer > 1 )
+                    {
+                       iplayer = iplayer - 1;
+                    }
+              } 
               button.visible=false;
               helpbutton.visible=false;
+              playerbutton.visible=false;
               button1.visible=false;
               button2.visible=true;
               button3.visible=true;
@@ -1201,13 +1330,25 @@ $(function(){
         if(button4.visible)
         {
             if (button4.state === 'pressed') {
-              bplane = false;
-              if (iplane >= 1 )
+              if(changePlane)
               {
-                  iplane = iplane + 1;
+                 bplane = false;
+                  if (iplane >= 1 )
+                  {
+                     iplane = iplane + 1;
+                  }
               }
+              else
+              {
+                 ichgplayer = false;
+                   if (iplayer >= 1 )
+                    {
+                       iplayer = iplayer + 1;
+                    }
+              } 
               button.visible=false;
               helpbutton.visible=false;
+              playerbutton.visible=false;
               button1.visible=false;
               button2.visible=true;
               button3.visible=true;
@@ -1224,6 +1365,7 @@ $(function(){
             if (pausebutton.state === 'pressed') {
               NewGamepbutton.visible=false;
               Continuepbutton.visible=false;
+              playerbutton.visible=false;
               if (pauseclick == 0)
               {
                 drawGradient();
@@ -1254,6 +1396,7 @@ $(function(){
               iDialogPage = 1;
               button.visible=true;
               helpbutton.visible=true;
+              playerbutton.visible=true;
               button1.visible=true;
               button2.visible=false;
               button3.visible=false;
@@ -1284,6 +1427,7 @@ $(function(){
               NoSave();
               button.visible=true;
               helpbutton.visible=true;
+              playerbutton.visible=true;
               button1.visible=true;
               button2.visible=false;
               button3.visible=false;
@@ -1304,6 +1448,7 @@ $(function(){
                 iDialogPage = 3;
                 button.visible=false;
                 helpbutton.visible=false;
+                playerbutton.visible=false;
                 button1.visible=false;
                 button2.visible=true;
                 button3.visible=false;
@@ -1314,6 +1459,26 @@ $(function(){
         }
         helpbutton.state = 'normal';
         helpbutton.imageShift = 0;
+        //кнопка Смена игрока
+        if(playerbutton.visible)
+        {
+            if (playerbutton.state === 'pressed') {
+                iDialogPage = 5;
+                playerbutton.visible=false;
+                button.visible=false;
+                helpbutton.visible=false;
+                button1.visible=false;
+                button2.visible=true;
+                button3.visible=false;
+                button4.visible=false;
+                button3.visible=true;
+                button4.visible=true;
+                NewGamepbutton.visible=false;
+                Continuepbutton.visible=false;
+            }
+        }
+        playerbutton.state = 'normal';
+        playerbutton.imageShift = 0;
     });
         displayIntro(); // Display intro once
     });
