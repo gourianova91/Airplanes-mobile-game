@@ -1621,6 +1621,48 @@ $(function(){
         if(button5.visible)
         {
             if (button5.state === 'pressed') {
+              //-----save
+              var save = {};
+              save.plane={};
+              save.clouds={};
+              save.badoblako={};
+              save.stars={};
+              save.plane.x = plane.x;
+              save.plane.y = plane.y;
+              save.life = iLife;
+              save.score = iScore;
+              save.coins = icoinNumber;
+
+              if (clouds.length > 0) {
+                      for (var ekey in clouds) {
+                              if (clouds[ekey] !== undefined) {
+                                      save.clouds[ekey]={};
+                                      save.clouds[ekey].x = clouds[ekey].x;
+                                      save.clouds[ekey].y = clouds[ekey].y;
+                              }
+                      }
+              }
+              if (badoblako.length > 0) {
+                      for (var okey in badoblako) {
+                              if (badoblako[okey] !== undefined) {
+                                      save.badoblako[okey]={};
+                                      save.badoblako[okey].x = badoblako[okey].x;
+                                      save.badoblako[okey].y = badoblako[okey].y;
+                              }
+                      }
+              }
+              if (stars.length > 0) {
+                      for (var skey in stars) {
+                              if (stars[skey] !== undefined) {
+                                      save.stars[skey]={};
+                                      save.stars[skey].x = stars[skey].x;
+                                      save.stars[skey].y = stars[skey].y;
+                              }
+                      }
+              }
+              localStorage.setItem('' + iplayer, JSON.stringify(save));
+              alert(localStorage.getItem(''+iplayer));
+              //-----
               clear();
               bDrawDialog = true;
               drawDialog();
