@@ -1897,26 +1897,27 @@ $(function(){
         if(Continuepbutton.visible)
         {
             if (Continuepbutton.state === 'pressed') {
+                    var load={};
+                    load=JSON.parse(localStorage.getItem(iplayer));
+                  //  alert(JSON.stringify(load));
                 if(isEnd)
                 {
                   iDialogPage = 8;
                   Changelevel = true;
+                   iScore=load.score;
+                   icoinNumber=load.coins;
                 }
                 else
                 {
                     //load 
-                    /*var load={};
-                    load=JSON.parse(localStorage.getItem(Numchgplayer));
-                    alert(JSON.stringify(load));
+
                         //
-                   iScore=load.score;
-                   icoinNumber=load.coins;
-                   
-                   
-                  
                    plane.x = load.plane.x;
                    plane.y = load.plane.y;
                    iLife=load.life;
+                   iScore=load.score;
+                   icoinNumber=load.coins;
+
                    if (load.clouds.length > 0) {
                            for (var ekey in load.clouds) {
                                    if (load.clouds[ekey] !== undefined) {
@@ -1950,9 +1951,7 @@ $(function(){
                                            bottle[bkey].y = load.bottle[bkey].y;
                                   }
                            }
-                   }*/
-                   
-                    //!!!
+                   }
 
                     iDialogPage = 0;
                     bDrawDialog = false;
