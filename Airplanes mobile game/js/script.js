@@ -1,5 +1,7 @@
 //переменные
 var canvas, ctx;
+var oRocketImage;
+var oEnemyImage;
 var backgroundImage;
 var backgroundImage1;
 var backImage;
@@ -58,6 +60,10 @@ var badoblako = []; // array of badoblako
 var stars = []; // array of stars
 var coins = []; // array of coins
 var bottle = [];
+var rockets = []; // array of rockets
+var enemies = []; // array of enemies
+var iEnemyW = 151; // enemy width
+var iEnemyH = 129; // enemy height
 var iBottleW = 40;
 var iBottleH = 45;
 var planeW = 120; // plane width
@@ -67,13 +73,15 @@ var iMoveDir = 1; // move direction
 var iCloudW = 131; // cloud width
 var iCloudH = 68; // cloud height
 var iBadoblakoW = 174; // badoblako width
-var iBadoblakoH = 100; // badoblako height
+var iBadoblakoH = 125; // badoblako height
 var istarW = 20; // star width
 var istarH = 20; // star height
 var icoinW = 100; // star width
 var icoinH = 100; // star height
 var iRocketSpeed = 10; // initial rocket speed
 var iCloudSpeed = 3; // initial cloud speed
+var iRocketSpeed = 10; // initial rocket speed
+var iEnemySpeed = 3; // initial enemy speed
 var iCloudSpeedMin = 3; // минимальная скорость облака
 var iCloudSpeedMax = 4; //максимальная скорость облака
 var pressedKeys = []; // array of pressed keys
@@ -110,6 +118,23 @@ function Plane(x, y, w, h, image) {
     this.h = h;
     this.image = image;
     this.bDrag = false;
+}
+
+function Rocket(x, y, w, h, speed, image) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.speed = speed;
+    this.image = image;
+}
+function Enemy(x, y, w, h, speed, image) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.speed = speed;
+    this.image = image;
 }
 
 function Cloud(x, y, w, h, speed, image) {
@@ -186,18 +211,27 @@ function Generate()
 {
          // and add first cloud
          addCloud();
+         addEnemy();
          setInterval(function(){
+              addRockets();
                  var rand = Math.random()*100;
-                 if(rand  <= 45 && !bDrawDialog && !bPause){
+                 if(rand  <= 65 && !bDrawDialog && !bPause){
                      //  addCloud(); 
                        addStars(); 
-                 } else if(rand  <= 60 && !bDrawDialog && !bPause) {
+                 } else if(rand  <= 70 && !bDrawDialog && !bPause) {
                      addBadoblako();
                      addStars();
+                     addEnemy();
                      addBottle();
                  }
             },500);
             
+}
+function addRockets() {
+    clearInterval(enTimer);
+    rockets.push(new Rocket(plane.x - 16, plane.y - plane.h + 50, 32, 32, iRocketSpeed, oRocketImage));
+    var interval = getRand(900, 1000);
+    enTimer = setInterval(addCloud, interval); // повторение кадров   
 }
 
     // Add Cloud function (adds a new cloud randomly)
@@ -223,6 +257,17 @@ function Generate()
 
     //var interval = getRand(1000, 2000);
     //enTimer = setInterval(addBadoblako, interval); // loop
+}
+
+// Add Enemy function (adds a new enemy randomly)
+function addEnemy() {
+    clearInterval(enTimer);
+
+    var randX = getRand(0, canvas.height - iEnemyH);
+    enemies.push(new Enemy(randX, 0, iEnemyW, iEnemyH, - iEnemySpeed, oEnemyImage));
+
+    var interval = getRand(900, 1000);
+    enTimer = setInterval(addEnemy, interval); // loop
 }
 
 function addStars() {
@@ -287,8 +332,8 @@ function addBottle(){
     function drawGradient()
     {
           var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
-          bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.3)');
-          bg_gradient.addColorStop(1.0, 'rgba(224, 224, 224, 0.3)');
+          bg_gradient.addColorStop(0.0, 'rgba(202, 202, 202, 0.2)');
+          bg_gradient.addColorStop(1.0, 'rgba(128, 126, 128, 0.2)');
 
           ctx.beginPath(); // начало фигуры
           ctx.fillStyle = bg_gradient;
@@ -328,8 +373,8 @@ function addBottle(){
 function MessageNotEnoughCoins()
 {
     var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
-    bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.6)');
-    bg_gradient.addColorStop(1.0, 'rgba(224, 224, 224, 0.6)');
+    bg_gradient.addColorStop(0.0, 'rgba(202, 202, 202, 0.3)');
+    bg_gradient.addColorStop(1.0, 'rgba(128, 126, 128, 0.3)');
 
     ctx.beginPath(); // начало фигуры
     ctx.fillStyle = bg_gradient;
@@ -343,7 +388,7 @@ function MessageNotEnoughCoins()
     ctx.lineWidth = 10;
     ctx.strokeStyle = 'rgba(224, 224, 224, 0.4)';
     ctx.strokeRect(ctx.canvas.width / 2 - 200, ctx.canvas.height / 2 - 220, 400, 240);
-    ctx.font = '22px Verdana';
+    ctx.font = '24px DejaVuSansCondensed';
     ctx.fillStyle = '#fff';
     ctx.fillText('Недостаточно монет', ctx.canvas.width / 2, ctx.canvas.height / 2 - 180);
     ctx.fillText('для покупки этого', ctx.canvas.width / 2, ctx.canvas.height / 2 - 150);
@@ -354,49 +399,52 @@ function MessageNotEnoughCoins()
 function MessageHints()
 {
     var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
-    bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.6)');
-    bg_gradient.addColorStop(1.0, 'rgba(224, 224, 224, 0.6)');
+    bg_gradient.addColorStop(0.0, 'rgba(202, 202, 202, 0.3)');
+    bg_gradient.addColorStop(1.0, 'rgba(128, 126, 128, 0.3)');
 
     ctx.beginPath(); // начало фигуры
     ctx.fillStyle = bg_gradient;
-    ctx.moveTo((ctx.canvas.width - 2) / 2 - 300, (ctx.canvas.height - 2) / 2 - 300);
+    ctx.moveTo((ctx.canvas.width - 2) / 2 - 300, (ctx.canvas.height - 2) / 2 - 275);
     ctx.lineTo((ctx.canvas.width - 2) / 2 - 300, (ctx.canvas.height - 2) / 2 + 200);
     ctx.lineTo((ctx.canvas.width - 2) / 2 + 300, (ctx.canvas.height - 2) / 2 + 200);
-    ctx.lineTo((ctx.canvas.width - 2) / 2 + 300, (ctx.canvas.height - 2) / 2 - 300);
-    ctx.lineTo((ctx.canvas.width - 2) / 2 - 300, (ctx.canvas.height - 2) / 2 - 300);
+    ctx.lineTo((ctx.canvas.width - 2) / 2 + 300, (ctx.canvas.height - 2) / 2 - 275);
+    ctx.lineTo((ctx.canvas.width - 2) / 2 - 300, (ctx.canvas.height - 2) / 2 - 275);
     ctx.closePath(); // конец фигуры
     ctx.fill(); // заполнение фигуры
     ctx.lineWidth = 10;
     ctx.strokeStyle = 'rgba(224, 224, 224, 0.5)';
-    ctx.strokeRect(ctx.canvas.width / 2 - 300, ctx.canvas.height / 2 - 300, 600, 500);
-    ctx.font = '24px Calibri';
+    ctx.strokeRect(ctx.canvas.width / 2 - 300, ctx.canvas.height / 2 - 275, 600, 475);
+    ctx.font = '24px DejaVuSansCondensed';
     ctx.fillStyle = '#fff';
     ctx.fillText('Управляйте самолетом', ctx.canvas.width / 2 - 150, 120);
     ctx.drawImage(plane.image, iSprPos * plane.w + 10, 0, plane.w + 5, plane.h, plane.x - plane.w / 2 + 30, plane.y - plane.h / 2 - 430, plane.w / 2, plane.h / 2);
     ctx.fillText(', передвигая его влево', ctx.canvas.width / 2 + 150, 120);
-    ctx.fillText('и вправо на экране. Попадание в облака', ctx.canvas.width / 2 - 60, 180);
-    ctx.drawImage(oCloudImage, ctx.canvas.width / 2 + 160, ctx.canvas.height / 2 - 175, iCloudW / 2, iCloudH / 2);
-    ctx.fillText('и', ctx.canvas.width / 2 + 240, 180);
-    ctx.fillText('зоны турбулентности ', ctx.canvas.width / 2 - 160, 240);
+    ctx.fillText('и вправо на экране. Столкновение с врагами', ctx.canvas.width / 2 - 40, 180);
+    ctx.drawImage(oEnemyImage, ctx.canvas.width / 2 + 180, ctx.canvas.height / 2 - 190, iEnemyW / 2, iEnemyH / 2);
+    ctx.fillText('и', ctx.canvas.width / 2 + 260, 180);
+    ctx.fillText('грозовыми облаками', ctx.canvas.width / 2 - 160, 240);
     ctx.drawImage(oBadoblakoImage, 0, 0, iBadoblakoW, iBadoblakoH, ctx.canvas.width / 2 - 40, ctx.canvas.height / 2 - 125, iBadoblakoW / 2, iBadoblakoH / 2);
     ctx.fillText('отнимает 10% топлива.', ctx.canvas.width / 2 + 160, 240);
     ctx.fillText('1 звездочка', ctx.canvas.width / 2 - 210, 300);
     ctx.drawImage(oStarsImage, 0, 0, istarW * 2, istarH * 2, ctx.canvas.width / 2 - 155, ctx.canvas.height / 2 - 50, istarW * 2, istarH * 2);
     ctx.fillText('= 10 очков.', ctx.canvas.width / 2 - 45, 300);
-    ctx.fillText('100 очков = 1, 500 = 2 и', ctx.canvas.width / 2 + 140, 300);
-    ctx.fillText('1000 = 3 монеты', ctx.canvas.width / 2 - 190, 360);
+    ctx.fillText('100 очков = 1, 300 = 2 и', ctx.canvas.width / 2 + 140, 300);
+    ctx.fillText('700 = 3 монеты', ctx.canvas.width / 2 - 190, 360);
     ctx.drawImage(oCoinsImage, 0, 0, icoinW, icoinH, ctx.canvas.width / 2 - 100, 355, icoinW / 2.5, icoinH / 2.5);
     ctx.fillText('. 1 бак', ctx.canvas.width / 2 - 20, 360);
     ctx.drawImage(oBottleImage, 0, 0, iBottleW, iBottleH, ctx.canvas.width / 2 + 20, 350, iBottleW, iBottleH);
     ctx.fillText('= 20% топлива.', ctx.canvas.width / 2 + 145, 360);
+    ctx.fillText('Попадание ракетой', ctx.canvas.width / 2 - 165, 420);
+    ctx.drawImage(oRocketImage, ctx.canvas.width / 2 - 60, 415);
+    ctx.fillText('во врага  = 10% топлива.', ctx.canvas.width / 2 + 105, 420);
 }
 
 //отрисовка окна выбора уровня
 function Levels()
 {
     var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
-    bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.6)');
-    bg_gradient.addColorStop(1.0, 'rgba(224, 224, 224, 0.6)');
+    bg_gradient.addColorStop(0.0, 'rgba(202, 202, 202, 0.3)');
+    bg_gradient.addColorStop(1.0, 'rgba(128, 126, 128, 0.3)');
 
     ctx.beginPath(); // начало фигуры
     ctx.fillStyle = bg_gradient;
@@ -411,17 +459,17 @@ function Levels()
     ctx.strokeStyle = 'rgba(224, 224, 224, 0.5)';
     ctx.strokeRect(ctx.canvas.width / 2 - 300, ctx.canvas.height / 2 - 300, 600, 500);
     
-    ctx.font = '25px Verdana';
+    ctx.font = '25px DejaVuSansCondensed';
     ctx.fillStyle = '#fff';
     ctx.fillText('Выбор уровня', ctx.canvas.width / 2, ctx.canvas.height / 2 - 280);
     if(!Levelmsg)
     {
         // информация об уровне
-        ctx.font = '25px Verdana';
+        ctx.font = '25px DejaVuSansCondensed';
         ctx.fillStyle = '#fff';
         ctx.fillText("Уровень " + ilevel, ctx.canvas.width / 2, ctx.canvas.height / 2 - 180);
         ctx.fillText('Best score:', ctx.canvas.width / 2, ctx.canvas.height / 2 - 120);
-        ctx.font = '30px Verdana';
+        ctx.font = '30px DejaVuSansCondensed';
         ctx.fillStyle = '#fff';
         ctx.fillText(icoinNumber, ctx.canvas.width / 2 + 213, ctx.canvas.height / 2 - 123);
         ctx.fillText('/ ', ctx.canvas.width / 2 + 235, ctx.canvas.height / 2 - 123);
@@ -449,7 +497,7 @@ function Levels()
             ctx.strokeRect(ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 - 200, 200, 200);
             Ok2button.visible = true;
         }
-        ctx.font = '24px Verdana';
+        ctx.font = '24px DejaVuSansCondensed';
         ctx.fillStyle = '#fff';
       //  ctx.fillText('x ', ctx.canvas.width / 2 + 215, ctx.canvas.height / 2 - 120);
         //draw coins
@@ -468,8 +516,8 @@ function Levels()
     else
     {
         var bg_gradient = ctx.createLinearGradient(0, 300, 0, 800);
-        bg_gradient.addColorStop(0.0, 'rgba(111, 107, 149, 0.6)');
-        bg_gradient.addColorStop(1.0, 'rgba(224, 224, 224, 0.6)');
+        bg_gradient.addColorStop(0.0, 'rgba(202, 202, 202, 0.3)');
+        bg_gradient.addColorStop(1.0, 'rgba(128, 126, 128, 0.3)');
 
         ctx.beginPath(); // начало фигуры
         ctx.fillStyle = bg_gradient;
@@ -483,7 +531,7 @@ function Levels()
         ctx.lineWidth = 10;
         ctx.strokeStyle = 'rgba(224, 224, 224, 0.4)';
         ctx.strokeRect(ctx.canvas.width / 2 - 200, ctx.canvas.height / 2 - 220, 400, 240);
-        ctx.font = '22px Verdana';
+        ctx.font = '22px DejaVuSansCondensed';
         ctx.fillStyle = '#fff';
         ctx.fillText('Недостаточно монет', ctx.canvas.width / 2, ctx.canvas.height / 2 - 180);
         ctx.fillText('для покупки этого', ctx.canvas.width / 2, ctx.canvas.height / 2 - 150);
@@ -506,16 +554,16 @@ function drawDialog() { // функция отрисовки диалога
         ctx.strokeStyle = 'rgba(224, 224, 224, 0.4)';
         ctx.stroke(); // отрисовка границы
         // отрисовка текста
-        ctx.font = '42px Condensed';
+        ctx.font = 'italic bold 65px DejaVuSansCondensed';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
         ctx.shadowColor = '#000';
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.shadowBlur = 2;
+        ctx.shadowOffsetX = 3;
+        ctx.shadowOffsetY = 3;
+        ctx.shadowBlur = 3;
         ctx.fillStyle = '#F4F3FC';
         if (iDialogPage === 1) {
-            ctx.fillText('Airplanes mobile game', ctx.canvas.width/2, ctx.canvas.height/2 - 280);
+            ctx.fillText('Airplanes', ctx.canvas.width/2, ctx.canvas.height/2 - 280);
             button.visible=true;
             button1.visible=true;
             button2.visible = false;
@@ -582,7 +630,7 @@ function drawDialog() { // функция отрисовки диалога
                 ctx.strokeStyle = 'rgba(255, 255, 204, 0.4)';
                 ctx.strokeRect(ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 - 200, 200, 200);
             }
-            ctx.font = '30px Verdana';
+            ctx.font = '30px DejaVuSansCondensed';
             ctx.fillStyle = '#fff';
             ctx.fillText(icoinNumber, ctx.canvas.width / 2 + 264, ctx.canvas.height / 2 - 123);
             ctx.fillText('/ ', ctx.canvas.width / 2 + 287, ctx.canvas.height / 2 - 123);
@@ -594,7 +642,7 @@ function drawDialog() { // функция отрисовки диалога
             {
                 ctx.fillText('3', ctx.canvas.width / 2 + 300, ctx.canvas.height / 2 - 123);
             }
-            ctx.font = '24px Verdana';
+            ctx.font = '24px DejaVuSansCondensed';
             ctx.fillStyle = '#fff';
            // ctx.fillText('x ', ctx.canvas.width / 2 + 265, ctx.canvas.height / 2 - 120);
             //draw coins
@@ -628,13 +676,13 @@ function drawDialog() { // функция отрисовки диалога
             Ok2button.visible = false;
             exitbutton.visible = false;
             Soundbutton.visible = false;
-            ctx.font = '24px Calibri';
+            ctx.font = '24px DejaVuSansCondensed';
             ctx.fillText('Управляйте самолетом ', ctx.canvas.width / 2 - 150, 190);
             ctx.drawImage(plane.image, iSprPos * plane.w + 10, 0, plane.w + 5, plane.h, plane.x - plane.w / 2 + 30, plane.y - plane.h / 2 - 360, plane.w / 2, plane.h / 2);
             ctx.fillText(', передвигая его влево и', ctx.canvas.width / 2 + 165, 190);
-            ctx.fillText('вправо. Избегайте попадания в облака', ctx.canvas.width / 2 - 80, 250);
-            ctx.drawImage(oCloudImage, ctx.canvas.width / 2 + 130, ctx.canvas.height / 2 - 105, iCloudW / 2, iCloudH / 2);
-            ctx.fillText('и зоны', ctx.canvas.width / 2 + 240, 250);
+            ctx.fillText('вправо. Избегайте столкновения с врагами', ctx.canvas.width / 2 - 59, 250);
+            ctx.drawImage(oEnemyImage, ctx.canvas.width / 2 + 160, ctx.canvas.height / 2 - 130, iEnemyW / 2, iEnemyH / 2);
+            ctx.fillText('и зонами', ctx.canvas.width / 2 + 270, 250);
             ctx.fillText('турбулентности ', ctx.canvas.width / 2 - 195, 300);
             ctx.drawImage(oBadoblakoImage, 0, 0, iBadoblakoW, iBadoblakoH, ctx.canvas.width / 2 - 105, ctx.canvas.height / 2 - 65, iBadoblakoW / 2, iBadoblakoH / 2);
             ctx.fillText('. Собирайте звездочки ', ctx.canvas.width / 2 + 100, 300);
@@ -665,7 +713,7 @@ function drawDialog() { // функция отрисовки диалога
             exitbutton.visible = false;
             Soundbutton.visible = false;
             // draw score
-            ctx.font = '28px Verdana';
+            ctx.font = '28px DejaVuSansCondensed';
             ctx.fillStyle = '#fff';
             points = iScore * 10;
             ctx.fillText('Game over, your score: ' + points + ' points', ctx.canvas.width / 2, ctx.canvas.height / 2 - 250);
@@ -700,7 +748,7 @@ function drawDialog() { // функция отрисовки диалога
                   ibestScore2 = points;
                }
             }
-            ctx.font = '35px Verdana';
+            ctx.font = '35px DejaVuSansCondensed';
             ctx.fillStyle = '#fff';
             ctx.fillText(icoinNumber, ctx.canvas.width / 2 + 40, ctx.canvas.height / 2 - 190);
             //draw coins
@@ -715,11 +763,11 @@ function drawDialog() { // функция отрисовки диалога
                     }
                 }
             }
-            ctx.font = '25px Verdana';
+            ctx.font = '25px DejaVuSansCondensed';
             ctx.fillStyle = '#fff';
             ctx.fillText("Имя игрока:", ctx.canvas.width / 2 - 50, ctx.canvas.height / 2 - 110);
             ctx.fillStyle = '#F4F3FC';
-            ctx.fillText("Игрок " + Numchgplayer, ctx.canvas.width / 2 + 90, ctx.canvas.height / 2 - 110);
+            ctx.fillText("Игрок " + Numchgplayer, ctx.canvas.width / 2 + 70, ctx.canvas.height / 2 - 110);
             if (flag == 0)
             {
                 if (PlaySound && iScore !== 0)
@@ -762,12 +810,12 @@ function drawDialog() { // функция отрисовки диалога
                 ctx.strokeRect(ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 - 200, 200, 200);
             }
             // информация об игроке
-            ctx.font = '25px Verdana';
+            ctx.font = '25px DejaVuSansCondensed';
             ctx.fillStyle = '#fff';
             ctx.fillText("Игрок " + iplayer, ctx.canvas.width / 2, ctx.canvas.height / 2 - 180);
             ctx.fillText('x ', ctx.canvas.width / 2, ctx.canvas.height / 2 - 70);
             ctx.fillText('x ', ctx.canvas.width / 2, ctx.canvas.height / 2 - 130);
-            ctx.font = '30px Verdana';
+            ctx.font = '30px DejaVuSansCondensed';
             ctx.fillStyle = '#fff';
             ctx.fillText(points, ctx.canvas.width / 2 + 45, ctx.canvas.height / 2 - 130);
             ctx.fillText(icoinNumber, ctx.canvas.width / 2 + 45, ctx.canvas.height / 2 - 70);
@@ -870,10 +918,7 @@ function drawDialog() { // функция отрисовки диалога
             Ok2button.visible = false;
             exitbutton.visible = false; 
             Soundbutton.visible = false;
-            if (Numchglevel !== 2)
-            {
-                Levels();
-            }
+            Levels();
         }
     }
     else if (!bDrawDialog)
@@ -889,7 +934,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(button.image, 0, button.imageShift, button.w, button.h, button.x, button.y, button.w, button.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '20px Condensed';
+        ctx.font = '20px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('Новая игра', ctx.canvas.width / 2 - 3, ctx.canvas.height / 2 - 87);
     }
@@ -899,7 +944,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(button1.image, 0, button1.imageShift, button1.w, button1.h, button1.x, button1.y, button1.w, button1.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '20px Condensed';
+        ctx.font = '20px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('Выбор самолета', ctx.canvas.width / 2 - 2, ctx.canvas.height / 2 - 23);
     }
@@ -909,7 +954,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(button2.image, 0, button2.imageShift, button2.w, button2.h, button2.x, button2.y, button2.w, button2.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '20px Condensed';
+        ctx.font = '20px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('Назад в Меню', ctx.canvas.width / 2 - 200, ctx.canvas.height / 2 + 263);
     }
@@ -919,7 +964,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(button3.image, 0, button3.imageShift, button3.w, button3.h, button3.x, button3.y, button3.w, button3.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '20px Condensed';
+        ctx.font = '20px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('Предыдущий', ctx.canvas.width / 2 - 154, ctx.canvas.height / 2 + 52);
     }
@@ -929,7 +974,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(button4.image, 0, button4.imageShift, button4.w, button4.h, button4.x, button4.y, button4.w, button4.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '20px Condensed';
+        ctx.font = '20px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('Следующий', ctx.canvas.width / 2 + 150, ctx.canvas.height / 2 + 52);
     }
@@ -944,7 +989,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(button5.image, 0, button5.imageShift, button5.w, button5.h, button5.x, button5.y, button5.w, button5.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '19px Condensed';
+        ctx.font = '19px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('Сохранить и выйти', ctx.canvas.width / 2 - 3, ctx.canvas.height / 2 - 20);
     }
@@ -954,7 +999,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(button6.image, 0, button6.imageShift, button6.w, button6.h, button6.x, button6.y, button6.w, button6.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '19px Condensed';
+        ctx.font = '19px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('Выйти без сохранения', ctx.canvas.width / 2 - 2, ctx.canvas.height / 2 + 43);
     }
@@ -964,7 +1009,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(Soundbutton.image, 0, Soundbutton.imageShift, Soundbutton.w, Soundbutton.h, Soundbutton.x, Soundbutton.y, Soundbutton.w, Soundbutton.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '19px Condensed';
+        ctx.font = '19px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('Вкл/Выкл звук', ctx.canvas.width / 2 - 2, ctx.canvas.height / 2 + 108);
     }
@@ -974,7 +1019,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(helpbutton.image, 0, helpbutton.imageShift, helpbutton.w, helpbutton.h, helpbutton.x, helpbutton.y, helpbutton.w, helpbutton.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '19px Condensed';
+        ctx.font = '19px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('Справка', ctx.canvas.width / 2 - 3, ctx.canvas.height / 2 + 39);
     }
@@ -984,7 +1029,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(Continuepbutton.image, 0, Continuepbutton.imageShift, Continuepbutton.w, Continuepbutton.h, Continuepbutton.x, Continuepbutton.y, Continuepbutton.w, Continuepbutton.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '19px Condensed';
+        ctx.font = '19px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('Продолжить', ctx.canvas.width / 2 - 3, ctx.canvas.height / 2 - 151);
     }
@@ -994,9 +1039,9 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(NewGamepbutton.image, 0, NewGamepbutton.imageShift, NewGamepbutton.w, NewGamepbutton.h, NewGamepbutton.x, NewGamepbutton.y, NewGamepbutton.w, NewGamepbutton.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '19px Condensed';
+        ctx.font = '19px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
-        ctx.fillText('Играть', ctx.canvas.width / 2 - 3, ctx.canvas.height / 2 + 113);
+        ctx.fillText('Играть', ctx.canvas.width / 2 - 3, ctx.canvas.height / 2 + 137);
     }
     if (playerbutton.visible == true)
     {
@@ -1004,7 +1049,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(playerbutton.image, 0, playerbutton.imageShift, playerbutton.w, playerbutton.h, playerbutton.x, playerbutton.y, playerbutton.w, playerbutton.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '19px Condensed';
+        ctx.font = '19px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('Смена игрока', ctx.canvas.width / 2 - 3, ctx.canvas.height / 2 + 99);
     }
@@ -1014,7 +1059,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(Okbutton.image, 0, Okbutton.imageShift, Okbutton.w, Okbutton.h, Okbutton.x, Okbutton.y, Okbutton.w, Okbutton.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '19px Condensed';
+        ctx.font = '19px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('OK', ctx.canvas.width / 2 - 2, ctx.canvas.height / 2 - 40);
     }
@@ -1024,7 +1069,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(Ok2button.image, 0, Ok2button.imageShift, Ok2button.w, Ok2button.h, Ok2button.x, Ok2button.y, Ok2button.w, Ok2button.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '19px Condensed';
+        ctx.font = '19px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('OK', ctx.canvas.width / 2 - 2, ctx.canvas.height / 2 + 139);
     }
@@ -1034,7 +1079,7 @@ function drawButton() { // функция отрисовки кнопки
         ctx.drawImage(exitbutton.image, 0, exitbutton.imageShift, exitbutton.w, exitbutton.h, exitbutton.x, exitbutton.y, exitbutton.w, exitbutton.h);
 
         // отрисовка текста на кнопке
-        ctx.font = '19px Condensed';
+        ctx.font = '19px DejaVuSansCondensed';
         ctx.fillStyle = '#F4F3FC';
         ctx.fillText('Выход', ctx.canvas.width / 2 - 2, ctx.canvas.height / 2 + 159);
     }
@@ -1055,16 +1100,10 @@ function drawScene() { // основная функция отрисовки с�
              iDialogPage = 8;*/
             if (iBgShiftY < 5) { // Finish position
                 bPause = true;
-                //clear();
-                // draw score
-                /*  ctx.font = '40px Verdana';
-                 ctx.fillStyle = '#FFF6EC';
-                 ctx.fillText('Вы проиграли, ваши очки: ' + iScore * 10 + ' points', ctx.canvas.width/2, ctx.canvas.height/2 - 100);*/
                 bDrawDialog = true;
                 iDialogPage = 4;
                 isEnd = true;
                 levelEnd = true;
-                //return;
             }
 
             // process pressed keys (movement of plane)
@@ -1095,6 +1134,36 @@ function drawScene() { // основная функция отрисовки с�
         
         // draw pause
         ctx.drawImage(pausebutton.image, 0, pausebutton.imageShift, pausebutton.w, pausebutton.h, pausebutton.x, pausebutton.y, pausebutton.w, pausebutton.h);
+  
+        // draw rockets
+        if (rockets.length > 0) {
+            for (var key in rockets) {
+                if (rockets[key] != undefined) {
+                    ctx.drawImage(rockets[key].image, rockets[key].x, rockets[key].y);
+                    rockets[key].y -= rockets[key].speed;
+
+                    // if a rocket is out of screen - remove it
+                    if (rockets[key].y < 0) {
+                        delete rockets[key];
+                    }
+                }
+            }
+        }
+        
+        // draw enemies
+        if (enemies.length > 0) {
+            for (var ekey in enemies) {
+                if (enemies[ekey] != undefined) {
+                    ctx.drawImage(enemies[ekey].image, enemies[ekey].x, enemies[ekey].y);
+                    enemies[ekey].y -= enemies[ekey].speed;
+
+                    // remove an enemy object if it is out of screen
+                    if (enemies[ekey].y > canvas.height) {
+                        delete enemies[ekey];
+                    }
+                }
+            }
+        }
         
        // draw explosions
        if (explosions.length > 0) {
@@ -1111,7 +1180,8 @@ function drawScene() { // основная функция отрисовки с�
             }
           }
        }    
-            // draw badoblako
+       
+        // draw badoblako
         if (badoblako.length > 0) {
             for (var okey in badoblako) {
                 if (badoblako[okey] != undefined) {
@@ -1139,8 +1209,6 @@ function drawScene() { // основная функция отрисовки с�
             for (var skey in stars) {
                 if (stars[skey] != undefined) {
                     ctx.drawImage(stars[skey].image, stars[skey].sprite*stars[skey].w, 0, stars[skey].w, stars[skey].h, stars[skey].x - stars[skey].w/2, stars[skey].y - stars[skey].h/2, stars[skey].w, stars[skey].h);
-                    //var rand = Math.random()*100;
-                    //if( 20 >= rand <= 50)
                     stars[skey].sprite++;          
                     stars[skey].y -= stars[skey].speed;
 
@@ -1183,6 +1251,63 @@ function drawScene() { // основная функция отрисовки с�
                 }
             } 
     }
+            //collision with enemies
+            if (enemies.length > 0) {
+            for (var ekey in enemies) {
+                if (enemies[ekey] != undefined) {
+
+                    // collisions with rockets
+                    if (rockets.length > 0) {
+                        for (var key in rockets) {
+                            if (rockets[key] != undefined) {
+                                if (rockets[key].y < enemies[ekey].y + enemies[ekey].h/2 && rockets[key].x > enemies[ekey].x && rockets[key].x + rockets[key].w < enemies[ekey].x + enemies[ekey].w) {
+                                    explosions.push(new Explosion(enemies[ekey].x + enemies[ekey].w / 2, enemies[ekey].y + enemies[ekey].h / 2, 120, 120, 0, oExplosionImage));
+
+                                    // delete enemy, rocket, and add +1 to score
+                                    delete enemies[ekey];
+                                    delete rockets[key];
+                                    iScore++;
+                                    if(PlaySound)
+                                     {
+                                        oblako_Sound = new Audio('media/explosion.wav');
+                                        oblako_Sound.volume = 0.9;
+                                        oblako_Sound.play();
+                                     }
+                                }
+                            }
+                        }
+                    }
+
+                    // collisions with plane
+                    if (enemies[ekey] != undefined) {
+                        if (plane.y - plane.h/2 < enemies[ekey].y + enemies[ekey].h/2 && plane.x - plane.w/2 < enemies[ekey].x + enemies[ekey].w && plane.x + plane.w/2 > enemies[ekey].x) {
+                            explosions.push(new Explosion(enemies[ekey].x + enemies[ekey].w / 2, enemies[ekey].y + enemies[ekey].h / 2, 120, 120, 0, oExplosionImage));
+
+                            // delete enemy and make damage
+                            delete enemies[ekey];
+                            iLife -= iDamage;
+                            if(PlaySound)
+                            {
+                                oblako_Sound = new Audio('media/explosion.wav');
+                                oblako_Sound.volume = 0.9;
+                                oblako_Sound.play();
+                            }
+
+                            if (iLife <= 0) { // Game over
+                                bPause = true;
+                                bDrawDialog = true;
+                                isEnd = true;
+                                flag = 0;
+                                iLife = 0;
+                                iScore = 0;
+                                iDialogPage = 4;  
+                               // return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         //collision with badoblako
         if (badoblako.length > 0) {
             for (var ekey in badoblako) {
@@ -1212,12 +1337,6 @@ function drawScene() { // основная функция отрисовки с�
                                 flag = 0;
                                 iLife = 0;
                                 iScore = 0;
-                              /*  if(PlaySound)
-                                {
-                                    Over_Sound = new Audio('media/Flagnab.wav');
-                                    Over_Sound.volume = 0.9;
-                                    Over_Sound.play();
-                                }*/
                                 iDialogPage = 4;  
                                // return;
                             }
@@ -1269,7 +1388,7 @@ function drawScene() { // основная функция отрисовки с�
             
         
         // display life and score
-        ctx.font = '14px Verdana';
+        ctx.font = '14px DejaVuSansCondensed';
         ctx.fillStyle = '#FFF6EC';
         ctx.fillText('Топливо: ' + iLife + ' / 100', 75, 660);
         ctx.fillText('          Очки: ' + iScore * 10, 40, 680);
@@ -1284,7 +1403,7 @@ function processPressedKeys() {
     if (pressedKeys[37] != undefined) { // 'Left' key
         if (iSprPos > 0) {
             iSprPos = 2;
-            iMoveDir = -3;//скорость поворота самолета
+            iMoveDir = -5;//скорость поворота самолета
         }
         if (plane.x - plane.w / 2 > 10) {
             plane.x += iMoveDir;
@@ -1293,7 +1412,7 @@ function processPressedKeys() {
     else if (pressedKeys[39] != undefined) { // 'Right' key
         if (iSprPos < 2) {
             iSprPos = 0;
-            iMoveDir = 3;
+            iMoveDir = 5;
         }
         if (plane.x + plane.w / 2 < canvas.width - 10) {
             plane.x += iMoveDir;
@@ -1323,7 +1442,7 @@ $(function(){
     }
     
     backImage = new Image();
-    backImage.src = 'images/1.jpg';
+    backImage.src = 'images/Fighter.jpg';
     backImage.onload = function() {
     }
 
@@ -1355,6 +1474,16 @@ $(function(){
     oCoinsImage = new Image();
     oCoinsImage.src = 'images/coin.png';
     oCoinsImage.onload = function() { }
+    
+    // initialization of empty rocket
+    oRocketImage = new Image();
+    oRocketImage.src = 'images/rocket.png';
+    oRocketImage.onload = function() { }
+    
+    // initialization of empty enemy
+    oEnemyImage = new Image();
+    oEnemyImage.src = 'images/Bomber39_1.png';
+    oEnemyImage.onload = function() { }
 
     // initialization of plane1
     var oPlaneImage = new Image();
@@ -1371,7 +1500,7 @@ $(function(){
 
     // загрузка кнопки меню
     var buttonImage = new Image();
-    buttonImage.src = 'images/menu1.png';
+    buttonImage.src = 'images/menu.png';
     buttonImage.onload = function() {
     }
     // загрузка кнопки паузы
@@ -1389,7 +1518,7 @@ $(function(){
     button6 = new Button(ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 + 30, 202, 52, 'normal', buttonImage); //кнопка Выйти без сохранения
     helpbutton = new Button(ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 + 25, 202, 52, 'normal', buttonImage); //кнопка Справка
     Continuepbutton = new Button(ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 - 165, 202, 52, 'normal', buttonImage); //кнопка Продолжить
-    NewGamepbutton = new Button(ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 + 100, 202, 52, 'normal', buttonImage); //кнопка Новая игра после подсказки
+    NewGamepbutton = new Button(ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 + 125, 202, 52, 'normal', buttonImage); //кнопка Новая игра после подсказки
     playerbutton = new Button(ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 + 85, 202, 52, 'normal', buttonImage); //кнопка Смена игрока
     Okbutton = new Button(ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 - 55, 202, 52, 'normal', buttonImage); //кнопка Ok
     exitbutton = new Button(ctx.canvas.width / 2 - 100, ctx.canvas.height / 2 + 145, 202, 52, 'normal', buttonImage); //кнопка Выход
@@ -1443,7 +1572,7 @@ $(function(){
                     // if (iSprPos > 0) {
                         iSprPos = 0;
                     // }
-                    plane.x=plane.x+5;    
+                    plane.x=plane.x+10;    
                 }
             },40);
         } else if(mouseX < plane.x){
@@ -1454,7 +1583,7 @@ $(function(){
                     // if (iSprPos  > 0) {
                         iSprPos = 2;
                     // }
-                    plane.x=plane.x-5;
+                    plane.x=plane.x-10;
                 }
             },40);
         }
@@ -1465,12 +1594,11 @@ $(function(){
             if (mouseX > ctx.canvas.width / 2 - 100 && mouseX < ctx.canvas.width / 2 - 100 + 200 && mouseY > ctx.canvas.height / 2 - 200 && mouseY < ctx.canvas.height / 2 - 200 + 200) {
                 if (iplane == 2)
                 {
+                  if (chgp !== 2)
+                  {
                     if (icoinNumber >= 3)
                     {
-                        if (chgp !== 2)
-                        {
-                            icoinNumber = icoinNumber - 3;
-                        }
+                        icoinNumber = icoinNumber - 3;
                         bplane = true;
                         imsg = false;
                         iDialogPage = 2;
@@ -1482,6 +1610,14 @@ $(function(){
                         imsg = true;
                         iDialogPage = 6;
                     }
+                  }
+                  else
+                  {
+                        bplane = true;
+                        imsg = false;
+                        iDialogPage = 2;
+                        chgp = 2;
+                  }
                 }
                 else if (iplane == 1)
                 {
@@ -1513,22 +1649,35 @@ $(function(){
             if (mouseX > ctx.canvas.width / 2 - 100 && mouseX < ctx.canvas.width / 2 - 100 + 200 && mouseY > ctx.canvas.height / 2 - 200 && mouseY < ctx.canvas.height / 2 - 200 + 200) {
                 if (ilevel == 2)
                 {
-                    if (icoinNumber >= 3)
+                    if (Numchglevel !== 2)
                     {
-                        if (Numchglevel !== 2)
-                        {
+                         if (icoinNumber >= 3)
+                         {
                             icoinNumber = icoinNumber - 3;
+                            iDialogPage = 0;
+                            bDrawDialog = false;
+                            bPause = false;
+                            pauseclick = 0;
+                            chglevel = true;
+                            Levelmsg = false;
+                            Numchglevel = 2;
+                         }
+                         else
+                        {
+                           ilevel = 1;
+                           Levelmsg = true;
+                           DialogPage = 8;
                         }
-                        iDialogPage = 8;
-                        chglevel = true;
-                        Levelmsg = false;
-                        Numchglevel = 2;
                     }
                     else
                     {
-                        ilevel = 1;
-                        Levelmsg = true;
-                        iDialogPage = 8;
+                            iDialogPage = 0;
+                            bDrawDialog = false;
+                            bPause = false;
+                            pauseclick = 0;
+                            chglevel = true;
+                            Levelmsg = false;
+                            Numchglevel = 2;
                     }
                 }
                 else if (ilevel == 1)
@@ -1887,8 +2036,9 @@ $(function(){
                 iDialogPage = 0;
                 bDrawDialog = false;
                 bPause = false;
-                     //  iDialogPage = 8; //для проверки
-                       // Changelevel = true;
+                pauseclick = 0;
+                       /*iDialogPage = 8; //для проверки
+                        Changelevel = true;*/
             }
         }
         NewGamepbutton.state = 'normal';
@@ -1897,27 +2047,34 @@ $(function(){
         if(Continuepbutton.visible)
         {
             if (Continuepbutton.state === 'pressed') {
-                    var load={};
-                    load=JSON.parse(localStorage.getItem(iplayer));
-                  //  alert(JSON.stringify(load));
-                if(isEnd)
+                if(levelEnd)
                 {
                   iDialogPage = 8;
                   Changelevel = true;
-                   iScore=load.score;
-                   icoinNumber=load.coins;
                 }
-                else
-                {
-                    //load 
+                   if(!isEnd)
+                   {
+                   
+                    //!!!
 
+                    iDialogPage = 0;
+                    bDrawDialog = false;
+                    bPause = false;
+                    pauseclick = 0;
+                   }
+               /* else if (isEnd)
+                {
+                                   //load 
+                var load={};
+                load=JSON.parse(localStorage.getItem(Numchgplayer));
+                   // alert(JSON.stringify(load));
                         //
+                   points=load.points;
+                   icoinNumber=load.coins;
+
                    plane.x = load.plane.x;
                    plane.y = load.plane.y;
                    iLife=load.life;
-                   iScore=load.score;
-                   icoinNumber=load.coins;
-
                    if (load.clouds.length > 0) {
                            for (var ekey in load.clouds) {
                                    if (load.clouds[ekey] !== undefined) {
@@ -1951,12 +2108,7 @@ $(function(){
                                            bottle[bkey].y = load.bottle[bkey].y;
                                   }
                            }
-                   }
-
-                    iDialogPage = 0;
-                    bDrawDialog = false;
-                    bPause = false;
-                }
+                   }*/
             }
         }
         Continuepbutton.state = 'normal';
@@ -2179,7 +2331,7 @@ $(function(){
               else
               {
                   save.life = iLife;
-                  save.score = iScore;
+                  save.points = points;
                   save.coins = icoinNumber;
               }
                localStorage.setItem('' + Numchgplayer, JSON.stringify(save));
