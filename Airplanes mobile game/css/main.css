@@ -2,7 +2,7 @@
     margin: 0;
     padding: 0;
 }
-html {
+/*html {
     background-attachment: fixed;
     background: #bda9a2;
     background: -moz-linear-gradient(top,  #bda9a2 0%, #90817a 47%, #6f6059 100%);
@@ -13,7 +13,7 @@ html {
     background: linear-gradient(to bottom,  #bda9a2 0%,#90817a 47%,#6f6059 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bda9a2', endColorstr='#6f6059',GradientType=0 );
     height: 130%;
-}
+}*/
 
 #scene {
     display: block;
