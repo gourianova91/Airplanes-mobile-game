@@ -66,8 +66,8 @@ var iEnemyW = 151; // enemy width
 var iEnemyH = 129; // enemy height
 var iBottleW = 40;
 var iBottleH = 45;
-var planeW = window.screen.width / 16 ; // plane width
-var planeH = window.screen.h / 7; // plane height
+var planeW = 120; // plane width
+var planeH = 160; // plane height
 var iSprPos = 1; // initial sprite frame for plane
 var iMoveDir = 1; // move direction
 var iCloudW = 137; // cloud width
@@ -1437,13 +1437,15 @@ function processPressedKeys() {
     }
 }
 
+
+
+
+
+
 // инициализация
 $(function(){
     canvas = document.getElementById('scene');
     ctx = canvas.getContext('2d');
-
-    canvas.width = window.screen.width ;
-    canvas.height = window.screen.height;
 
     backgroundImage = new Image();
     backgroundImage.src = 'images/fon.jpg';

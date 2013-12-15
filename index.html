@@ -2,13 +2,11 @@
 <html lang="en" >
     <head>
         <meta charset="utf-8" />
-        <meta name="author" content="Script Tutorials" />
-        <title>HTML5 Game Development - Lesson 10 (SkyWalker) | Script Tutorials</title>
 
         <!-- add styles -->
         <link href="css/main.css" rel="stylesheet" type="text/css" />
 
-        <!-- add scripts -->
+       <!--  add scripts -->
         <!--[if lt IE 9]>
           <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
@@ -16,8 +14,40 @@
         <script src="js/script.js"></script>
     </head>
     <body>         
-       <div class="container">
-            <canvas id="scene" width="700" height="700" tabindex="1"></canvas>
+        <div id="gameArea">
+            <script type="text/javascript">
+
+            function resizeGame(){
+                var gameArea = document.getElementById('gameArea');
+                var widthToHeight = 3 / 1.5 ;
+                var newWidth = window.innerWidth;
+                var newHeight = window.innerHeight;
+                var newWidthToHeight = newWidth / newHeight;
+                if (newWidthToHeight > widthToHeight) {
+  // ширина окна шире, чем желаемая ширина игры 
+                        newWidth = newHeight * widthToHeight;
+                        document.getElementById('gameArea').style.height = (newHeight) + 'px';
+                        gameArea.style.width = newWidth + 'px';
+                } else { // высота окна выше желаемой высоты игры
+                        newHeight = newWidth / widthToHeight;
+                        gameArea.style.width = newWidth + 'px';
+                        gameArea.style.height = newHeight + 'px';
+                }
+
+                gameArea.style.marginTop = (-newHeight / 2) + 'px';
+                gameArea.style.marginLeft = (-newWidth / 2) + 'px';
+                gameArea.style.fontSize = (newWidth / 400) + 'em';
+                
+                var gameCanvas = document.getElementById('scene');
+                gameCanvas.width = newWidth;
+                gameCanvas.height = newHeight;
+            }
+
+            window.addEventListener('resize', resizeGame, false);
+            window.addEventListener('orientationchange', resizeGame, false);
+            </script>
+            <canvas id="scene"  tabindex="1"></canvas>
+            <div id="statsPanel"></div>
         </div>
     </body>
 </html>
