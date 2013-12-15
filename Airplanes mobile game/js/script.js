@@ -1723,6 +1723,9 @@ $(function(){
             if (mouseX > button.x && mouseX < button.x + button.w && mouseY > button.y && mouseY < button.y + button.h) {
                 button.state = 'pressed';
                 button.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (button1.visible)
@@ -1730,6 +1733,9 @@ $(function(){
             if (mouseX > button1.x && mouseX < button1.x + button1.w && mouseY > button1.y && mouseY < button1.y + button1.h) {
                 button1.state = 'pressed';
                 button1.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (button2.visible)
@@ -1737,6 +1743,9 @@ $(function(){
             if (mouseX > button2.x && mouseX < button2.x + button2.w && mouseY > button2.y && mouseY < button2.y + button2.h) {
                 button2.state = 'pressed';
                 button2.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (button3.visible)
@@ -1744,6 +1753,9 @@ $(function(){
             if (mouseX > button3.x && mouseX < button3.x + button3.w && mouseY > button3.y && mouseY < button3.y + button3.h) {
                 button3.state = 'pressed';
                 button3.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (button4.visible)
@@ -1751,6 +1763,9 @@ $(function(){
             if (mouseX > button4.x && mouseX < button4.x + button4.w && mouseY > button4.y && mouseY < button4.y + button4.h) {
                 button4.state = 'pressed';
                 button4.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (pausebutton.visible)
@@ -1758,6 +1773,9 @@ $(function(){
             if (mouseX > pausebutton.x && mouseX < pausebutton.x + pausebutton.w && mouseY > pausebutton.y && mouseY < pausebutton.y + pausebutton.h) {
                 pausebutton.state = 'pressed';
                 pausebutton.imageShift = 0;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (button5.visible)
@@ -1765,6 +1783,9 @@ $(function(){
             if (mouseX > button5.x && mouseX < button5.x + button5.w && mouseY > button5.y && mouseY < button5.y + button5.h) {
                 button5.state = 'pressed';
                 button5.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (button6.visible)
@@ -1772,6 +1793,9 @@ $(function(){
             if (mouseX > button6.x && mouseX < button6.x + button6.w && mouseY > button6.y && mouseY < button6.y + button6.h) {
                 button6.state = 'pressed';
                 button6.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (helpbutton.visible)
@@ -1779,6 +1803,9 @@ $(function(){
             if (mouseX > helpbutton.x && mouseX < helpbutton.x + helpbutton.w && mouseY > helpbutton.y && mouseY < helpbutton.y + helpbutton.h) {
                 helpbutton.state = 'pressed';
                 helpbutton.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (Continuepbutton.visible)
@@ -1786,6 +1813,9 @@ $(function(){
             if (mouseX > Continuepbutton.x && mouseX < Continuepbutton.x + Continuepbutton.w && mouseY > Continuepbutton.y && mouseY < Continuepbutton.y + Continuepbutton.h) {
                 Continuepbutton.state = 'pressed';
                 Continuepbutton.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (NewGamepbutton.visible)
@@ -1793,6 +1823,9 @@ $(function(){
             if (mouseX > NewGamepbutton.x && mouseX < NewGamepbutton.x + NewGamepbutton.w && mouseY > NewGamepbutton.y && mouseY < NewGamepbutton.y + NewGamepbutton.h) {
                 NewGamepbutton.state = 'pressed';
                 NewGamepbutton.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (playerbutton.visible)
@@ -1800,6 +1833,9 @@ $(function(){
             if (mouseX > playerbutton.x && mouseX < playerbutton.x + playerbutton.w && mouseY > playerbutton.y && mouseY < playerbutton.y + playerbutton.h) {
                 playerbutton.state = 'pressed';
                 playerbutton.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (Okbutton.visible)
@@ -1807,6 +1843,9 @@ $(function(){
             if (mouseX > Okbutton.x && mouseX < Okbutton.x + Okbutton.w && mouseY > Okbutton.y && mouseY < Okbutton.y + Okbutton.h) {
                 Okbutton.state = 'pressed';
                 Okbutton.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (Ok2button.visible)
@@ -1814,6 +1853,9 @@ $(function(){
             if (mouseX > Ok2button.x && mouseX < Ok2button.x + Ok2button.w && mouseY > Ok2button.y && mouseY < Ok2button.y + Ok2button.h) {
                 Ok2button.state = 'pressed';
                 Ok2button.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (exitbutton.visible)
@@ -1821,6 +1863,9 @@ $(function(){
             if (mouseX > exitbutton.x && mouseX < exitbutton.x + exitbutton.w && mouseY > exitbutton.y && mouseY < exitbutton.y + exitbutton.h) {
                 exitbutton.state = 'pressed';
                 exitbutton.imageShift = 112;
+                button_Sound = new Audio('media/button2.wav');
+                button_Sound.volume = 0.9;
+                button_Sound.play();
             }
         }
         if (Soundbutton.visible)
