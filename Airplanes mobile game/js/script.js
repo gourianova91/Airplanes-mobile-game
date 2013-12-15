@@ -70,8 +70,8 @@ var planeW = 120; // plane width
 var planeH = 160; // plane height
 var iSprPos = 1; // initial sprite frame for plane
 var iMoveDir = 1; // move direction
-var iCloudW = 131; // cloud width
-var iCloudH = 68; // cloud height
+var iCloudW = 137; // cloud width
+var iCloudH = 77; // cloud height
 var iBadoblakoW = 174; // badoblako width
 var iBadoblakoH = 125; // badoblako height
 var istarW = 20; // star width
@@ -213,25 +213,40 @@ function Generate()
          addCloud();
          addEnemy();
          setInterval(function(){
-              addRockets();
                  var rand = Math.random()*100;
-                 if(rand  <= 65 && !bDrawDialog && !bPause){
-                     //  addCloud(); 
-                       addStars(); 
-                 } else if(rand  <= 70 && !bDrawDialog && !bPause) {
-                     addBadoblako();
-                     addStars();
-                     addEnemy();
-                     addBottle();
+                 if(rand  <= 50 && !bDrawDialog && !bPause){
+                       addStars();
+                       addBottle();
                  }
             },500);
+         setInterval(function(){
+                 var rand1 = Math.random()*100;
+                 if(rand1  <= 5 && !bDrawDialog && !bPause){
+                       addBadoblako();
+                 } 
+            },500);
+         setInterval(function(){
+                 var rand2 = Math.random()*100;
+                 if(rand2  <= 15 && !bDrawDialog && !bPause){
+                       addEnemy();
+                 } 
+            },500);
+         setInterval(function(){
+                 var rand3 = Math.random()*100;
+                 if(rand3  <= 35 && !bDrawDialog && !bPause){
+                       addCloud(); 
+                 } 
+            },500);
+         setInterval(function(){
+              addRockets();
+            },700);
             
 }
 function addRockets() {
     clearInterval(enTimer);
-    rockets.push(new Rocket(plane.x - 16, plane.y - plane.h + 50, 32, 32, iRocketSpeed, oRocketImage));
+    rockets.push(new Rocket(plane.x - 16, plane.y - plane.h + 50, 13, 33, iRocketSpeed, oRocketImage));
     var interval = getRand(900, 1000);
-    enTimer = setInterval(addCloud, interval); // повторение кадров   
+    enTimer = setInterval(addRockets, interval); // повторение кадров   
 }
 
     // Add Cloud function (adds a new cloud randomly)
@@ -239,11 +254,11 @@ function addRockets() {
     clearInterval(enTimer);
 
     var randX = getRand(0, canvas.height - iCloudH);
-    var chanse = getRand(0,100);
-    if(chanse <= 20 && !bDrawDialog && !bPause)
-        {
+  //  var chanse = getRand(0,100);
+    //if(chanse <= 20 && !bDrawDialog && !bPause)
+        //{
           clouds.push(new Cloud(randX, 0, iCloudW, iCloudH, - getRand(iCloudSpeedMin, iCloudSpeedMax), oCloudImage)); //скорость теперь настраивается переменными
-        }
+        //}
     var interval = getRand(900, 1000);
    // var interval = getRand(5000, 10000);
     enTimer = setInterval(addCloud, interval); // повторение кадров
@@ -367,6 +382,14 @@ function addBottle(){
          if (bottle[bkey] !== undefined)
          delete bottle[bkey];
        }
+       for (var key in rockets) {
+         if (rockets[key] !== undefined)
+          delete rockets[key];
+       }
+       for (var ekey in enemies) {
+         if (enemies[ekey] !== undefined)
+          delete enemies[ekey];
+       }
     }
 
 //отрисовка окна сообщения
@@ -435,8 +458,9 @@ function MessageHints()
     ctx.drawImage(oBottleImage, 0, 0, iBottleW, iBottleH, ctx.canvas.width / 2 + 20, 350, iBottleW, iBottleH);
     ctx.fillText('= 20% топлива.', ctx.canvas.width / 2 + 145, 360);
     ctx.fillText('Попадание ракетой', ctx.canvas.width / 2 - 165, 420);
-    ctx.drawImage(oRocketImage, ctx.canvas.width / 2 - 60, 415);
+    ctx.drawImage(oRocketImage, ctx.canvas.width / 2 - 50, 415);
     ctx.fillText('во врага  = 10% топлива.', ctx.canvas.width / 2 + 105, 420);
+    // ctx.drawImage(oCloudImage, ctx.canvas.width / 2 + 180, ctx.canvas.height / 2 - 190, iCloudW / 2, iCloudH / 2);
 }
 
 //отрисовка окна выбора уровня
@@ -1096,7 +1120,7 @@ function drawScene() { // основная функция отрисовки с�
             iBgShiftY -= 2; // move main ground
              /* bDrawDialog = true;
              iDialogPage = 4;*/
-             /* bDrawDialog = true;
+              /*bDrawDialog = true;
              iDialogPage = 8;*/
             if (iBgShiftY < 5) { // Finish position
                 bPause = true;
@@ -1121,8 +1145,27 @@ function drawScene() { // основная функция отрисовки с�
             {
                 ctx.drawImage(backgroundImage1, 0, 0 + iBgShiftY, 700, 700, 0, 0, 700, 700);
             }
+        
+        // draw pause
+        ctx.drawImage(pausebutton.image, 0, pausebutton.imageShift, pausebutton.w, pausebutton.h, pausebutton.x, pausebutton.y, pausebutton.w, pausebutton.h);
+  
+            
+        // draw clouds
+        if (clouds.length > 0) {
+            for (var ekey in clouds) {
+                if (clouds[ekey] != undefined) {
+                    ctx.drawImage(clouds[ekey].image, clouds[ekey].x, clouds[ekey].y);
+                    clouds[ekey].y -= clouds[ekey].speed;
 
-            // draw plane
+                    // remove an cloud object if it is out of screen
+                    if (clouds[ekey].y > canvas.height) {
+                        delete clouds[ekey];
+                    }
+                }
+            }
+        }
+        
+             // draw plane
              if (chgp == 1)
              {
              ctx.drawImage(plane.image, iSprPos*plane.w + 15, 0, plane.w+10, plane.h, plane.x - plane.w/2, plane.y - plane.h/2, plane.w, plane.h);
@@ -1131,10 +1174,7 @@ function drawScene() { // основная функция отрисовки с�
              {
                 ctx.drawImage(plane.image, iSprPos*plane.w + 15, 0, plane.w + 10, plane.h, plane.x - plane.w/2, plane.y - plane.h/2, plane.w, plane.h);
              }
-        
-        // draw pause
-        ctx.drawImage(pausebutton.image, 0, pausebutton.imageShift, pausebutton.w, pausebutton.h, pausebutton.x, pausebutton.y, pausebutton.w, pausebutton.h);
-  
+            
         // draw rockets
         if (rockets.length > 0) {
             for (var key in rockets) {
@@ -1174,8 +1214,8 @@ function drawScene() { // основная функция отрисовки с�
              explosions[key].sprite++;
              
                 // remove an explosion object when it expires
-                if (explosions[key].sprite > 10) {
-                delete explosions[key];
+                if (explosions[key].sprite > 5) {
+                    delete explosions[key];
                 }
             }
           }
@@ -1223,21 +1263,6 @@ function drawScene() { // основная функция отрисовки с�
                 }
             }
         }
-
-        // draw clouds
-        if (clouds.length > 0) {
-            for (var ekey in clouds) {
-                if (clouds[ekey] != undefined) {
-                    ctx.drawImage(clouds[ekey].image, clouds[ekey].x, clouds[ekey].y);
-                    clouds[ekey].y -= clouds[ekey].speed;
-
-                    // remove an cloud object if it is out of screen
-                    if (clouds[ekey].y > canvas.height) {
-                        delete clouds[ekey];
-                    }
-                }
-            }
-        }
         // draw bottles
             if (bottle.length > 0 ) {
             for(var bkey in bottle) {
@@ -1251,6 +1276,7 @@ function drawScene() { // основная функция отрисовки с�
                 }
             } 
     }
+
             //collision with enemies
             if (enemies.length > 0) {
             for (var ekey in enemies) {
@@ -1261,7 +1287,7 @@ function drawScene() { // основная функция отрисовки с�
                         for (var key in rockets) {
                             if (rockets[key] != undefined) {
                                 if (rockets[key].y < enemies[ekey].y + enemies[ekey].h/2 && rockets[key].x > enemies[ekey].x && rockets[key].x + rockets[key].w < enemies[ekey].x + enemies[ekey].w) {
-                                    explosions.push(new Explosion(enemies[ekey].x + enemies[ekey].w / 2, enemies[ekey].y + enemies[ekey].h / 2, 120, 120, 0, oExplosionImage));
+                                    explosions.push(new Explosion(enemies[ekey].x + enemies[ekey].w / 2, enemies[ekey].y + enemies[ekey].h / 2, 118, 118, 0, oExplosionImage));
 
                                     // delete enemy, rocket, and add +1 to score
                                     delete enemies[ekey];
@@ -1281,7 +1307,7 @@ function drawScene() { // основная функция отрисовки с�
                     // collisions with plane
                     if (enemies[ekey] != undefined) {
                         if (plane.y - plane.h/2 < enemies[ekey].y + enemies[ekey].h/2 && plane.x - plane.w/2 < enemies[ekey].x + enemies[ekey].w && plane.x + plane.w/2 > enemies[ekey].x) {
-                            explosions.push(new Explosion(enemies[ekey].x + enemies[ekey].w / 2, enemies[ekey].y + enemies[ekey].h / 2, 120, 120, 0, oExplosionImage));
+                            explosions.push(new Explosion(enemies[ekey].x + enemies[ekey].w / 2, enemies[ekey].y + enemies[ekey].h / 2, 118, 118, 0, oExplosionImage));
 
                             // delete enemy and make damage
                             delete enemies[ekey];
@@ -1318,7 +1344,7 @@ function drawScene() { // основная функция отрисовки с�
                         if (plane.y < badoblako[ekey].y + badoblako[ekey].h &&  plane.x > badoblako[ekey].x - badoblako[ekey].h/2 && plane.x < badoblako[ekey].x + badoblako[ekey].h/2) {
                             //console.log(badoblako[ekey].x);
                             
-                            explosions.push(new Explosion(badoblako[ekey].x + badoblako[ekey].w / 2, badoblako[ekey].y + badoblako[ekey].h / 2, 120, 120, 0, oExplosionImage));
+                            explosions.push(new Explosion(badoblako[ekey].x + badoblako[ekey].w / 2, badoblako[ekey].y + badoblako[ekey].h / 2, 118, 118, 0, oExplosionImage));
 
                             // delete badoblako and make damage
                             delete badoblako[ekey];
@@ -1426,7 +1452,7 @@ $(function(){
     ctx = canvas.getContext('2d');
 
     backgroundImage = new Image();
-    backgroundImage.src = 'images/levelmap.jpg';
+    backgroundImage.src = 'images/fon.jpg';
     backgroundImage.onload = function() {
     }
     backgroundImage.onerror = function() {
@@ -1434,7 +1460,7 @@ $(function(){
     }
     
     backgroundImage1 = new Image();
-    backgroundImage1.src = 'images/levelmap1.png';
+    backgroundImage1.src = 'images/levelmap.jpg';
     backgroundImage1.onload = function() {
     }
     backgroundImage1.onerror = function() {
@@ -1448,12 +1474,13 @@ $(function(){
 
     // initialization of explosion image
     oExplosionImage = new Image();
-    oExplosionImage.src = 'images/explosion.png';
+   // oExplosionImage.src = 'images/explosion.png';
+   oExplosionImage.src = 'images/Explosion-Sprite-Sheet.png';
     oExplosionImage.onload = function() { }
 
     // initialization of empty cloud
     oCloudImage = new Image();
-    oCloudImage.src = 'images/oblako_1.png';
+    oCloudImage.src = 'images/cloud1.png';
     oCloudImage.onload = function() { }
     
     // initialization of badoblako
@@ -1477,7 +1504,8 @@ $(function(){
     
     // initialization of empty rocket
     oRocketImage = new Image();
-    oRocketImage.src = 'images/rocket.png';
+  //  oRocketImage.src = 'images/rocket.png';
+    oRocketImage.src = 'images/B2.png';
     oRocketImage.onload = function() { }
     
     // initialization of empty enemy
@@ -2037,8 +2065,10 @@ $(function(){
                 bDrawDialog = false;
                 bPause = false;
                 pauseclick = 0;
-                       /*iDialogPage = 8; //для проверки
-                        Changelevel = true;*/
+                      /*  iDialogPage = 8; //для проверки
+                        Changelevel = true;
+                        Numchglevel = 2;
+                        icoinNumber = 3;*/
             }
         }
         NewGamepbutton.state = 'normal';
